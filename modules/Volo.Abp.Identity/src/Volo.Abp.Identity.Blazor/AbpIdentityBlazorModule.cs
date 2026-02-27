@@ -4,7 +4,6 @@ using Localization.Resources.AbpUi;
 using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp.AspNetCore.Components.Web.Theming.Routing;
 using Volo.Abp.Mapperly;
-using Volo.Abp.BlazoriseUI;
 using Volo.Abp.Identity.Localization;
 using Volo.Abp.Localization;
 using Volo.Abp.Modularity;
@@ -19,8 +18,7 @@ namespace Volo.Abp.Identity.Blazor;
 [DependsOn(
     typeof(AbpIdentityApplicationContractsModule),
     typeof(AbpMapperlyModule),
-    typeof(AbpPermissionManagementBlazorModule),
-    typeof(AbpBlazoriseUIModule)
+    typeof(AbpPermissionManagementBlazorModule)
     )]
 public class AbpIdentityBlazorModule : AbpModule
 {

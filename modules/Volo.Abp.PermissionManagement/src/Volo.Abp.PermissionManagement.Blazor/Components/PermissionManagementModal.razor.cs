@@ -1,8 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Blazorise;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
 using Volo.Abp.AspNetCore.Components.Web.Configuration;
@@ -19,7 +18,7 @@ public partial class PermissionManagementModal
 
     [Inject] protected IOptions<AbpLocalizationOptions> LocalizationOptions { get; set; }
 
-    protected Modal _modal;
+    protected bool _isVisible;
 
     protected string _providerName;
     protected string _providerKey;
@@ -65,7 +64,7 @@ public partial class PermissionManagementModal
             GrantAll = _allGroups.SelectMany(x => x.Permissions).All(p => p.IsGranted);
             GrantAny = !GrantAll && _allGroups.SelectMany(x => x.Permissions).Any(p => p.IsGranted);
 
-            await InvokeAsync(_modal.Show);
+            await InvokeAsync(() => { _isVisible = true; StateHasChanged(); });
         }
         catch (Exception ex)
         {
@@ -128,7 +127,8 @@ public partial class PermissionManagementModal
 
     protected Task CloseModal()
     {
-        return InvokeAsync(_modal.Hide);
+        _isVisible = false;
+        return InvokeAsync(StateHasChanged);
     }
 
     protected virtual async Task SaveAsync()
@@ -162,7 +162,7 @@ public partial class PermissionManagementModal
 
             await CurrentApplicationConfigurationCacheResetService.ResetAsync(userId);
 
-            await InvokeAsync(_modal.Hide);
+            await InvokeAsync(() => { _isVisible = false; StateHasChanged(); });
             await Notify.Success(L["SavedSuccessfully"]);
         }
         catch (Exception ex)
@@ -305,10 +305,12 @@ public partial class PermissionManagementModal
         );
     }
 
-    protected virtual Task ClosingModal(ModalClosingEventArgs eventArgs)
+    protected virtual void OnTabChangedByIndex(int index)
     {
-        eventArgs.Cancel = eventArgs.CloseReason == CloseReason.FocusLostClosing;
-        return Task.CompletedTask;
+        if (_groups != null && index >= 0 && index < _groups.Count)
+        {
+            _selectedTabName = GetNormalizedGroupName(_groups[index].Name);
+        }
     }
 
     protected virtual bool IsPermissionGroupDisabled(PermissionGroupDto group)

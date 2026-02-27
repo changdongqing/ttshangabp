@@ -1,9 +1,7 @@
 using System;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
-using Blazorise;
-using Blazorise.Bootstrap5;
-using Blazorise.Icons.FontAwesome;
+using MudBlazor.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -146,7 +144,7 @@ public class TTShangBlazorModule : AbpModule
         ConfigureVirtualFileSystem(hostingEnvironment);
         ConfigureSwaggerServices(context.Services);
         ConfigureAutoApiControllers();
-        ConfigureBlazorise(context);
+        context.Services.AddMudServices();
         ConfigureRouter(context);
         ConfigureMenu(context);
     }
@@ -251,18 +249,6 @@ public class TTShangBlazorModule : AbpModule
         );
     }
 
-
-    private void ConfigureBlazorise(ServiceConfigurationContext context)
-    {
-        context.Services
-            .AddBlazorise(options =>
-            {
-                // TODO (IMPORTANT): To use Blazorise, you need a license key. Get your license key directly from Blazorise, follow  the instructions at https://abp.io/faq#how-to-get-blazorise-license-key
-                //options.ProductToken = "Your Product Token";
-            })
-            .AddBootstrap5Providers()
-            .AddFontAwesomeIcons();
-    }
 
     private void ConfigureMenu(ServiceConfigurationContext context)
     {

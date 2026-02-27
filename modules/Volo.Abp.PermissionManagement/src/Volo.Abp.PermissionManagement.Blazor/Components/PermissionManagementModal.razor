@@ -1,110 +1,37 @@
-﻿@inherits Volo.Abp.AspNetCore.Components.AbpComponentBase
-<Modal @ref="_modal" Closing="@ClosingModal">
-    <ModalContent Size="ModalSize.Large" Centered="true">
-        <ModalHeader>
-            <ModalTitle>@L["Permissions"] - @_entityDisplayName</ModalTitle>
-            <CloseButton Clicked="CloseModal" />
-        </ModalHeader>
-        <ModalBody Overflow="Overflow.Hidden">
+@inherits Volo.Abp.AspNetCore.Components.AbpComponentBase
+@using Volo.Abp.PermissionManagement.Localization
 
-            <Row Class="row d-flex align-items-center mb-2">
-                <Column>
-                    <Field Class="mb-2">
-                        <Addons>
-                            <Addon AddonType="AddonType.Start">
-                                <span class="input-group-text">
-                                   <Icon Name="IconName.Search"/>
-                                </span>
-                            </Addon>
-                            <Addon AddonType="AddonType.Body">
-                                <TextEdit Text="@_permissionGroupSearchText" TextChanged="OnPermissionGroupSearchTextChangedAsync"/>
-                            </Addon>
-                        </Addons>
-                    </Field>
-                </Column>
-                <Column ColumnSize="ColumnSize.IsAuto">
-                    <Field>
-                        <Check Disabled="_selectAllDisabled" Cursor="Cursor.Pointer" CheckedChanged="@GrantAllAsync" Checked="@GrantAll" TValue="bool" Indeterminate="@GrantAny">
-                            @L["SelectAllInAllTabs"]
-                        </Check>
-                    </Field>
-                </Column>
-            </Row>
+<MudDialog @bind-Visible="_isVisible" MaxWidth="MaxWidth.Large" FullWidth="true">
+    <TitleContent>@L["Permissions"] - @_entityDisplayName</TitleContent>
+    <DialogContent>
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
+            <MudTextField T="string" Value="@_permissionGroupSearchText" ValueChanged="OnPermissionGroupSearchTextChangedAsync" Placeholder="@L["Search"]" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" Margin="Margin.Dense" Style="max-width:300px" />
+            <MudCheckBox T="bool" Value="@GrantAll" ValueChanged="@GrantAllAsync" Disabled="_selectAllDisabled" Indeterminate="@GrantAny">@L["SelectAllInAllTabs"]</MudCheckBox>
+        </MudStack>
 
-            <fieldset class="border rounded-4 p-3">
-                <legend class="px-1 h5 mb-0">@L["PermissionGroup"]</legend>
-
-                    @if (_groups != null && _groups.Any())
-                    {
-                        <div class="lpx-scroll-pills-container" >
-                            <Tabs @key="_groups"
-                                  VerticalItemsColumnSize="ColumnSize.Is4.OnDesktop"
-                                  TabPosition="TabPosition.Start"
-                                  Pills="true"
-                                  SelectedTab="@_selectedTabName"
-                                  SelectedTabChanged="@OnSelectedTabChangedAsync">
-                                <Items>
-                                    @foreach (var group in _groups)
-                                    {
-                                        <Tab Name="@GetNormalizedGroupName(group.Name)">
-                                            @if (group.Permissions.Any(x => x.IsGranted))
-                                            {
-                                                <b>@group.DisplayName (@(group.Permissions.Count(x => x.IsGranted)))</b>
-                                            }
-                                            else
-                                            {
-                                                <small>
-                                                    @group.DisplayName (@(group.Permissions.Count(x => x.IsGranted)))
-                                                </small>
-                                            }
-                                        </Tab>
-                                    }
-                                </Items>
-                                <Content>
-                                    @foreach (var group in _groups)
-                                    {
-                                        <TabPanel Name="@GetNormalizedGroupName(group.Name)">
-                                            <div class="w-100 ps-1" style="height: 500px;overflow-y: auto">
-                                                <Field>
-                                                    <Check
-                                                        Disabled="@(IsPermissionGroupDisabled(group))"
-                                                        Checked="@(group.Permissions.All(x => x.IsGranted))"
-                                                        Cursor="Cursor.Pointer"
-                                                        CheckedChanged="@(b => GroupGrantAllChanged(b, group))"
-                                                        TValue="bool">
-                                                        @L["SelectAllInThisTab"]
-                                                    </Check>
-                                                </Field>
-
-                                                <Divider />
-
-                                                @foreach (var permission in group.Permissions)
-                                                {
-                                                    <Field Style="@($"margin-inline-start: {GetPermissionDepthOrDefault(permission.Name) * 20}px")">
-                                                        <Check
-                                                            Disabled="@(IsDisabledPermission(permission))"
-                                                            Cursor="Cursor.Pointer"
-                                                            Checked="@permission.IsGranted"
-                                                            CheckedChanged="@(async (b) => await PermissionChanged(b, group, permission))"
-                                                            TValue="bool">
-                                                            @GetShownName(permission)
-                                                        </Check>
-                                                    </Field>
-                                                }
-                                            </div>
-                                        </TabPanel>
-                                    }
-                                </Content>
-                            </Tabs>
-                        </div>
-
-                    }
-
-            </fieldset>
-        </ModalBody>
-        <ModalFooter>
-            <Button Color="Color.Primary" Outline Clicked="CloseModal">@L["Cancel"]</Button>
-            <Button Color="Color.Primary" Clicked="SaveAsync">@L["Save"]</Button>
-        </ModalFooter>
-    </ModalContent>
-</Modal>
+        @if (_groups != null && _groups.Any())
+        {
+            <MudTabs @key="_groups" Position="Position.Start" Rounded="true" Border="true" ActivePanelIndexChanged="@((i) => OnTabChangedByIndex(i))">
+                @foreach (var group in _groups)
+                {
+                    <MudTabPanel Text="@($"{group.DisplayName} ({group.Permissions.Count(x => x.IsGranted)})")">
+                        <MudStack Class="pa-2" Style="height:400px; overflow-y:auto">
+                            <MudCheckBox T="bool" Value="@(group.Permissions.All(x => x.IsGranted))" ValueChanged="@(b => GroupGrantAllChanged(b, group))" Disabled="@(IsPermissionGroupDisabled(group))">@L["SelectAllInThisTab"]</MudCheckBox>
+                            <MudDivider />
+                            @foreach (var permission in group.Permissions)
+                            {
+                                <div style="@($"margin-inline-start: {GetPermissionDepthOrDefault(permission.Name) * 20}px")">
+                                    <MudCheckBox T="bool" Value="@permission.IsGranted" ValueChanged="@(async (b) => await PermissionChanged(b, group, permission))" Disabled="@(IsDisabledPermission(permission))">@GetShownName(permission)</MudCheckBox>
+                                </div>
+                            }
+                        </MudStack>
+                    </MudTabPanel>
+                }
+            </MudTabs>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="CloseModal">@L["Cancel"]</MudButton>
+        <MudButton Color="Color.Primary" OnClick="SaveAsync">@L["Save"]</MudButton>
+    </DialogActions>
+</MudDialog>
