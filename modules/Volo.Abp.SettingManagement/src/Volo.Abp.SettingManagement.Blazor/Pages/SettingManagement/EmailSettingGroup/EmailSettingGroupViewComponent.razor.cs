@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using Blazorise;
 using Microsoft.AspNetCore.Components;
 using Volo.Abp.AspNetCore.Components.Messages;
 using Volo.Abp.AspNetCore.Components.Web.Configuration;
@@ -29,12 +28,8 @@ public partial class EmailSettingGroupViewComponent
 
     protected SendTestEmailViewModel SendTestEmailInput;
 
-    protected Validations EmailSettingValidation;
-    
-    protected Validations EmailSettingTestValidation;
-    
-    protected Modal SendTestEmailModal;
-    
+    protected bool _isTestEmailDialogVisible;
+
     protected bool HasSendTestEmailPermission { get; set; }
     
     
@@ -63,11 +58,6 @@ public partial class EmailSettingGroupViewComponent
     {
         try
         {
-            if (!await EmailSettingValidation.ValidateAll())
-            {
-                return;
-            }
-            
             await EmailSettingsAppService.UpdateAsync(ObjectMapper.Map<UpdateEmailSettingsViewModel, UpdateEmailSettingsDto>(EmailSettings));
 
             await CurrentApplicationConfigurationCacheResetService.ResetAsync();
@@ -84,7 +74,6 @@ public partial class EmailSettingGroupViewComponent
     {
         try
         {
-            await EmailSettingTestValidation.ClearAll();
             var emailSettings = await EmailSettingsAppService.GetAsync();
             SendTestEmailInput = new SendTestEmailViewModel 
             {
@@ -94,7 +83,8 @@ public partial class EmailSettingGroupViewComponent
                 Body = L["TestEmailBody"]
             };
             
-            await SendTestEmailModal.Show();
+            _isTestEmailDialogVisible = true;
+            await InvokeAsync(StateHasChanged);
         }
         catch (Exception ex)
         {
@@ -104,18 +94,14 @@ public partial class EmailSettingGroupViewComponent
 
     protected virtual Task CloseSendTestEmailModalAsync()
     {
-        return InvokeAsync(SendTestEmailModal.Hide);
+        _isTestEmailDialogVisible = false;
+        return InvokeAsync(StateHasChanged);
     }
 
     protected virtual async Task SendTestEmailAsync()
     {
         try
         {
-            if (!await EmailSettingTestValidation.ValidateAll())
-            {
-                return;
-            }
-            
             await EmailSettingsAppService.SendTestEmailAsync(ObjectMapper.Map<SendTestEmailViewModel, SendTestEmailInput>(SendTestEmailInput));
 
             await Notify.Success(L["SentSuccessfully"]);

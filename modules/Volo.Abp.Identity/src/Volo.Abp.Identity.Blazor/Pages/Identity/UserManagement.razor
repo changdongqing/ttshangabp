@@ -2,298 +2,127 @@
 @attribute [Authorize(IdentityPermissions.Users.Default)]
 @using Microsoft.AspNetCore.Authorization
 @using Volo.Abp.PermissionManagement.Blazor.Components
-@using Volo.Abp.BlazoriseUI.Components.ObjectExtending
 @using Volo.Abp.Identity.Localization
 @using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
-@inject AbpBlazorMessageLocalizerHelper<IdentityResource> LH
 @using Microsoft.Extensions.Localization
 @using Volo.Abp.UI.Navigation.Localization.Resource
+@using Volo.Abp.Users
 @inject IStringLocalizer<AbpUiNavigationResource> LUiNavigation
+@inherits Volo.Abp.AspNetCore.Components.AbpComponentBase
 
-@inherits AbpCrudPageBase<IIdentityUserAppService, IdentityUserDto, Guid, GetIdentityUsersInput, IdentityUserCreateDto, IdentityUserUpdateDto>
+<MudText Typo="Typo.h5" Class="mb-4">@L["Users"]</MudText>
 
-<Card>
-    <CardHeader>
-        @* ************************* PAGE HEADER ************************* *@
-        <PageHeader Title="@L["Users"]"
-                    BreadcrumbItems="@BreadcrumbItems"
-                    Toolbar="@Toolbar" />
-    </CardHeader>
-    <CardBody class="row">
+<MudPaper Class="pa-4">
+    <MudStack Row="true" Justify="Justify.SpaceBetween" Class="mb-4">
+        @if (HasCreatePermission)
+        {
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenCreateDialogAsync">@L["NewUser"]</MudButton>
+        }
+        <MudTextField T="string" Value="@FilterText" ValueChanged="OnSearchTextChanged" Placeholder="@L["Search"]" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" Class="ml-auto" Style="max-width:300px;" />
+    </MudStack>
 
-        <Column ColumnSize="ColumnSize.Is8">
-        </Column>
-        <Column ColumnSize="ColumnSize.Is4" class="form-group row" style="text-align:right;">
-            <label for="inputPassword" class="col-sm-4 col-form-label pt-1">  @L["Search"] </label>
-            <div class="col-sm-8">
-                <TextEdit class="form-control-sm" id="inputPassword" Text="@GetListInput.Filter" TextChanged="@OnSearchTextChanged" />
-            </div>
-        </Column>
+    <MudDataGrid T="IdentityUserDto" Items="@Entities" Dense="true" Hover="true" Bordered="true">
+        <Columns>
+            <TemplateColumn T="IdentityUserDto" Title="@L["Actions"]" CellStyle="width:120px">
+                <CellTemplate>
+                    <MudMenu Label="@L["Actions"]" Variant="Variant.Outlined" Size="Size.Small" AnchorOrigin="Origin.BottomLeft">
+                        @if (HasUpdatePermission)
+                        {
+                            <MudMenuItem OnClick="@(async () => await OpenEditDialogAsync(context.Item))">@L["Edit"]</MudMenuItem>
+                        }
+                        @if (HasManagePermissionsPermission)
+                        {
+                            <MudMenuItem OnClick="@(async () => await PermissionManagementModal.OpenAsync(PermissionProviderName, context.Item.Id.ToString(), context.Item.UserName))">@L["Permissions"]</MudMenuItem>
+                        }
+                        @if (HasDeletePermission && CurrentUser.Id != context.Item.Id)
+                        {
+                            <MudMenuItem OnClick="@(async () => await DeleteEntityAsync(context.Item))">@L["Delete"]</MudMenuItem>
+                        }
+                    </MudMenu>
+                </CellTemplate>
+            </TemplateColumn>
+            <PropertyColumn Property="x => x.UserName" Title="@L["UserName"]" />
+            <PropertyColumn Property="x => x.Email" Title="@L["EmailAddress"]" />
+            <PropertyColumn Property="x => x.PhoneNumber" Title="@L["PhoneNumber"]" />
+        </Columns>
+    </MudDataGrid>
 
-        @* ************************* DATA GRID ************************* *@
-        <AbpExtensibleDataGrid TItem="IdentityUserDto"
-                               Data="Entities"
-                               ReadData="OnDataGridReadAsync"
-                               TotalItems="TotalCount"
-                               ShowPager="true"
-                               PageSize="PageSize"
-                               CurrentPage="@CurrentPage"
-                               Columns="@UserManagementTableColumns">
-        </AbpExtensibleDataGrid>
-    </CardBody>
-</Card>
+    <MudStack Row="true" Justify="Justify.FlexEnd" Class="mt-4">
+        <MudPagination Count="@((int)Math.Ceiling((double)TotalCount / PageSize))" Selected="@CurrentPage" SelectedChanged="PageChangedAsync" />
+    </MudStack>
+</MudPaper>
 
-@* ************************* CREATE MODAL ************************* *@
-@if (HasCreatePermission)
+@* ************************* CREATE DIALOG ************************* *@
+@if (HasCreatePermission && IsCreateDialogVisible)
 {
-    <Modal @ref="CreateModal" Closing="@ClosingCreateModal">
-        <ModalContent Centered="true">
-            <Form id="CreateUserForm">
-                <ModalHeader>
-                    <ModalTitle>@L["NewUser"]</ModalTitle>
-                    <CloseButton Clicked="CloseCreateModalAsync" />
-                </ModalHeader>
-                <ModalBody>
-                    <Validations @ref="@CreateValidationsRef" Model="@NewEntity" ValidateOnLoad="false">
-                        <Tabs @bind-SelectedTab="@CreateModalSelectedTab">
-                            <Items>
-                                <Tab Name="UserInformations">@L["UserInformations"]</Tab>
-                                <Tab Name="Roles">@L["Roles"]</Tab>
-                            </Items>
-                            <Content>
-                                <TabPanel Name="UserInformations">
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel>@L["DisplayName:UserName"] *</FieldLabel>
-                                            <TextEdit @bind-Text="NewEntity.UserName" Autofocus="true">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </TextEdit>
-                                        </Field>
-                                    </Validation>
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel>@L["DisplayName:Name"]</FieldLabel>
-                                            <TextEdit @bind-Text="NewEntity.Name">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </TextEdit>
-                                        </Field>
-                                    </Validation>
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel>@L["DisplayName:Surname"]</FieldLabel>
-                                            <TextEdit @bind-Text="NewEntity.Surname">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </TextEdit>
-                                        </Field>
-                                    </Validation>
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel>@L["DisplayName:Password"] *</FieldLabel>
-                                            <Addons>
-                                                <Addon AddonType="AddonType.Body">
-                                                    <TextEdit Role="@_passwordTextRole" @bind-Text="NewEntity.Password">
-                                                    </TextEdit>
-                                                </Addon>
-                                                <Addon AddonType="AddonType.End">
-                                                    <Button Color="Color.Secondary" Clicked="@(() => ChangePasswordTextRole(null))">
-                                                        <Icon Name="ShowPassword ? IconName.Eye : IconName.EyeSlash" />
-                                                    </Button>
-                                                </Addon>
-                                            </Addons>
-                                            <ValidationError Style="display: block" />
-                                        </Field>
-                                    </Validation>
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel>@L["DisplayName:Email"] *</FieldLabel>
-                                            <TextEdit @bind-Text="NewEntity.Email">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </TextEdit>
-                                        </Field>
-                                    </Validation>
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel>@L["DisplayName:PhoneNumber"]</FieldLabel>
-                                            <TextEdit @bind-Text="NewEntity.PhoneNumber">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </TextEdit>
-                                        </Field>
-                                    </Validation>
-                                    <Field>
-                                        <Check TValue="bool" @bind-Checked="@NewEntity.IsActive">@L["DisplayName:IsActive"]</Check>
-                                    </Field>
-                                    <Field>
-                                        <Tooltip Text="@L["Description:LockoutEnabled"].Value" style="width: fit-content;" Placement="TooltipPlacement.Right" >
-                                            <Check TValue="bool" @bind-Checked="@NewEntity.LockoutEnabled">@L["DisplayName:LockoutEnabled"] <Icon Name="IconName.InfoCircle"/> </Check>
-                                        </Tooltip>
-                                    </Field>
-                                    <ExtensionProperties TEntityType="IdentityUserCreateDto" TResourceType="IdentityResource" Entity="@NewEntity" LH="@LH" ModalType="ExtensionPropertyModalType.CreateModal" />
-                                </TabPanel>
-                                <TabPanel Name="Roles">
-                                    @if (NewUserRoles != null)
-                                    {
-                                        @foreach (var role in NewUserRoles)
-                                        {
-                                            <Field>
-                                                <input type="hidden" @bind-value="@role.Name" />
-                                                <Check TValue="bool" @bind-Checked="@role.IsAssigned">@role.Name</Check>
-                                            </Field>
-                                        }
-                                    }
-                                </TabPanel>
-                            </Content>
-                        </Tabs>
-                    </Validations>
-                </ModalBody>
-                <ModalFooter>
-                    <Button Color="Color.Primary" Outline Clicked="CloseCreateModalAsync">@L["Cancel"]</Button>
-                    <SubmitButton Form="CreateUserForm" Clicked="@CreateEntityAsync" />
-                </ModalFooter>
-            </Form>
-        </ModalContent>
-    </Modal>
+    <MudDialog @bind-Visible="IsCreateDialogVisible">
+        <TitleContent>@L["NewUser"]</TitleContent>
+        <DialogContent>
+            <MudTabs>
+                <MudTabPanel Text="@L["UserInformations"]">
+                    <MudTextField @bind-Value="NewEntity.UserName" Label="@L["DisplayName:UserName"]" Required="true" Class="mb-2" />
+                    <MudTextField @bind-Value="NewEntity.Name" Label="@L["DisplayName:Name"]" Class="mb-2" />
+                    <MudTextField @bind-Value="NewEntity.Surname" Label="@L["DisplayName:Surname"]" Class="mb-2" />
+                    <MudTextField @bind-Value="NewEntity.Password" Label="@L["DisplayName:Password"]" Required="true" InputType="@(ShowCreatePassword ? InputType.Text : InputType.Password)" Adornment="Adornment.End" AdornmentIcon="@(ShowCreatePassword ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff)" OnAdornmentClick="@(() => ShowCreatePassword = !ShowCreatePassword)" Class="mb-2" />
+                    <MudTextField @bind-Value="NewEntity.Email" Label="@L["DisplayName:Email"]" Required="true" Class="mb-2" />
+                    <MudTextField @bind-Value="NewEntity.PhoneNumber" Label="@L["DisplayName:PhoneNumber"]" Class="mb-2" />
+                    <MudCheckBox @bind-Value="NewEntity.IsActive" Label="@L["DisplayName:IsActive"]" />
+                    <MudCheckBox @bind-Value="NewEntity.LockoutEnabled" Label="@L["DisplayName:LockoutEnabled"]" />
+                </MudTabPanel>
+                <MudTabPanel Text="@L["Roles"]">
+                    @if (NewUserRoles != null)
+                    {
+                        @foreach (var role in NewUserRoles)
+                        {
+                            <MudCheckBox @bind-Value="@role.IsAssigned" Label="@role.Name" />
+                        }
+                    }
+                </MudTabPanel>
+            </MudTabs>
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="CloseCreateDialog">@L["Cancel"]</MudButton>
+            <MudButton Color="Color.Primary" OnClick="CreateEntityAsync">@L["Save"]</MudButton>
+        </DialogActions>
+    </MudDialog>
 }
 
-@* ************************* EDIT MODAL ************************* *@
-@if (HasUpdatePermission)
+@* ************************* EDIT DIALOG ************************* *@
+@if (HasUpdatePermission && IsEditDialogVisible)
 {
-    <Modal @ref="EditModal" Closing="@ClosingEditModal">
-        <ModalContent Centered="true">
-            <Form id="EditUserForm">
-                <ModalHeader>
-                    <ModalTitle>@L["Edit"]</ModalTitle>
-                    <CloseButton Clicked="CloseEditModalAsync" />
-                </ModalHeader>
-                <ModalBody>
-                    <Validations @ref="@EditValidationsRef" Model="@EditingEntity" ValidateOnLoad="false">
-                        <input type="hidden" name="ConcurrencyStamp" @bind-value="EditingEntity.ConcurrencyStamp" />
-
-                        <Tabs @bind-SelectedTab="@EditModalSelectedTab">
-                            <Items>
-                                <Tab Name="UserInformations">@L["UserInformations"]</Tab>
-                                @if (EditUserRoles != null && EditUserRoles.Any())
-                                {
-                                    <Tab Name="Roles">@L["Roles"]</Tab>
-                                }
-                            </Items>
-                            <Content>
-                                <TabPanel Name="UserInformations">
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel>@L["DisplayName:UserName"] *</FieldLabel>
-                                            <TextEdit @bind-Text="EditingEntity.UserName" Autofocus="true">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </TextEdit>
-                                        </Field>
-                                    </Validation>
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel>@L["DisplayName:Name"]</FieldLabel>
-                                            <TextEdit @bind-Text="EditingEntity.Name">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </TextEdit>
-                                        </Field>
-                                    </Validation>
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel>@L["DisplayName:Surname"]</FieldLabel>
-                                            <TextEdit @bind-Text="EditingEntity.Surname">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </TextEdit>
-                                        </Field>
-                                    </Validation>
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel>@L["DisplayName:Password"]</FieldLabel>
-                                            <Addons>
-                                                <Addon AddonType="AddonType.Body">
-                                                    <TextEdit Role="@_passwordTextRole" @bind-Text="EditingEntity.Password">
-                                                    </TextEdit>
-                                                </Addon>
-                                                <Addon AddonType="AddonType.End">
-                                                    <Button Color="Color.Secondary" Clicked="@(() => ChangePasswordTextRole(null))">
-                                                        <Icon Name="ShowPassword ? IconName.Eye : IconName.EyeSlash" />
-                                                    </Button>
-                                                </Addon>
-                                            </Addons>
-                                            <ValidationError Style="display: block" />
-                                        </Field>
-                                    </Validation>
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel>@L["DisplayName:Email"] *</FieldLabel>
-                                            <TextEdit @bind-Text="EditingEntity.Email">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </TextEdit>
-                                        </Field>
-                                    </Validation>
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel>@L["DisplayName:PhoneNumber"]</FieldLabel>
-                                            <TextEdit @bind-Text="EditingEntity.PhoneNumber">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </TextEdit>
-                                        </Field>
-                                    </Validation>
-                                    @if (!IsEditCurrentUser)
-                                    {
-                                        <Field>
-                                            <Check TValue="bool" @bind-Checked="EditingEntity.IsActive">@L["DisplayName:IsActive"]</Check>
-                                        </Field>
-                                    }
-                                    <Field>
-                                            <Tooltip Text="@L["Description:LockoutEnabled"].Value" style="width: fit-content;" Placement="TooltipPlacement.Right" >
-                                                <Check TValue="bool" @bind-Checked="EditingEntity.LockoutEnabled">@L["DisplayName:LockoutEnabled"] <Icon Name="IconName.InfoCircle"/> </Check>
-                                            </Tooltip>
-                                        </Field>
-                                    <ExtensionProperties TEntityType="IdentityUserUpdateDto" TResourceType="IdentityResource" Entity="@EditingEntity" LH="@LH" ModalType="ExtensionPropertyModalType.EditModal" />
-                                </TabPanel>
-                                @if (EditUserRoles != null && EditUserRoles.Any())
-                                {
-                                    <TabPanel Name="Roles">
-                                        @if (EditUserRoles != null)
-                                        {
-                                            @foreach (var role in EditUserRoles)
-                                            {
-                                                <Field>
-                                                    <input type="hidden" @bind-value="@role.Name" />
-                                                    <Check TValue="bool" @bind-Checked="@role.IsAssigned">@role.Name</Check>
-                                                </Field>
-                                            }
-                                        }
-                                    </TabPanel>
-                                }
-                            </Content>
-                        </Tabs>
-                    </Validations>
-                </ModalBody>
-                <ModalFooter>
-                    <Button Color="Color.Primary" Outline Clicked="CloseEditModalAsync">@L["Cancel"]</Button>
-                    <SubmitButton Form="EditUserForm" Clicked="@UpdateEntityAsync" />
-                </ModalFooter>
-            </Form>
-        </ModalContent>
-    </Modal>
+    <MudDialog @bind-Visible="IsEditDialogVisible">
+        <TitleContent>@L["Edit"]</TitleContent>
+        <DialogContent>
+            <MudTabs>
+                <MudTabPanel Text="@L["UserInformations"]">
+                    <MudTextField @bind-Value="EditingEntity.UserName" Label="@L["DisplayName:UserName"]" Required="true" Class="mb-2" />
+                    <MudTextField @bind-Value="EditingEntity.Name" Label="@L["DisplayName:Name"]" Class="mb-2" />
+                    <MudTextField @bind-Value="EditingEntity.Surname" Label="@L["DisplayName:Surname"]" Class="mb-2" />
+                    <MudTextField @bind-Value="EditingEntity.Password" Label="@L["DisplayName:Password"]" InputType="@(ShowEditPassword ? InputType.Text : InputType.Password)" Adornment="Adornment.End" AdornmentIcon="@(ShowEditPassword ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff)" OnAdornmentClick="@(() => ShowEditPassword = !ShowEditPassword)" Class="mb-2" />
+                    <MudTextField @bind-Value="EditingEntity.Email" Label="@L["DisplayName:Email"]" Required="true" Class="mb-2" />
+                    <MudTextField @bind-Value="EditingEntity.PhoneNumber" Label="@L["DisplayName:PhoneNumber"]" Class="mb-2" />
+                    @if (!IsEditCurrentUser)
+                    {
+                        <MudCheckBox @bind-Value="EditingEntity.IsActive" Label="@L["DisplayName:IsActive"]" />
+                    }
+                    <MudCheckBox @bind-Value="EditingEntity.LockoutEnabled" Label="@L["DisplayName:LockoutEnabled"]" />
+                </MudTabPanel>
+                @if (EditUserRoles != null && EditUserRoles.Any())
+                {
+                    <MudTabPanel Text="@L["Roles"]">
+                        @foreach (var role in EditUserRoles)
+                        {
+                            <MudCheckBox @bind-Value="@role.IsAssigned" Label="@role.Name" />
+                        }
+                    </MudTabPanel>
+                }
+            </MudTabs>
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="CloseEditDialog">@L["Cancel"]</MudButton>
+            <MudButton Color="Color.Primary" OnClick="UpdateEntityAsync">@L["Save"]</MudButton>
+        </DialogActions>
+    </MudDialog>
 }
 
 @if (HasManagePermissionsPermission)

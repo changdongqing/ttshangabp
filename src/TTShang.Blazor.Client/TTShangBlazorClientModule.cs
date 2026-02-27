@@ -2,9 +2,7 @@ using System.IO;
 using Volo.Abp.VirtualFileSystem;
 using System;
 using System.Net.Http;
-using Blazorise;
-using Blazorise.Bootstrap5;
-using Blazorise.Icons.FontAwesome;
+using MudBlazor.Services;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -56,7 +54,7 @@ public class TTShangBlazorClientModule : AbpModule
 
         ConfigureAuthentication(builder);
         ConfigureHttpClient(context, environment);
-        ConfigureBlazorise(context);
+        context.Services.AddMudServices();
         ConfigureRouter(context);
         ConfigureMenu(context);
     }
@@ -77,18 +75,6 @@ public class TTShangBlazorClientModule : AbpModule
         {
             options.MenuContributors.Add(new TTShangMenuContributor(context.Services.GetConfiguration()));
         });
-    }
-
-    private void ConfigureBlazorise(ServiceConfigurationContext context)
-    {
-        context.Services
-            .AddBlazorise(options =>
-            {
-                // TODO (IMPORTANT): To use Blazorise, you need a license key. Get your license key directly from Blazorise, follow  the instructions at https://abp.io/faq#how-to-get-blazorise-license-key
-                //options.ProductToken = "Your Product Token";
-            })
-            .AddBootstrap5Providers()
-            .AddFontAwesomeIcons();
     }
 
     private static void ConfigureAuthentication(WebAssemblyHostBuilder builder)

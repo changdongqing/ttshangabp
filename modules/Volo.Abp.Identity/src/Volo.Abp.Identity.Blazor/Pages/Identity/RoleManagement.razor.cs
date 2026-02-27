@@ -1,16 +1,12 @@
-using System.Threading.Tasks;
-using Blazorise;
-using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Volo.Abp.AspNetCore.Components.Web.Extensibility.EntityActions;
-using Volo.Abp.AspNetCore.Components.Web.Extensibility.TableColumns;
-using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
+using Volo.Abp.Identity;
 using Volo.Abp.Identity.Localization;
 using Volo.Abp.PermissionManagement.Blazor.Components;
-using Volo.Abp.ObjectExtending;
-using Volo.Abp.Data;
 
 namespace Volo.Abp.Identity.Blazor.Pages.Identity;
 
@@ -18,114 +14,142 @@ public partial class RoleManagement
 {
     protected const string PermissionProviderName = "R";
 
+    [Inject] protected IIdentityRoleAppService AppService { get; set; }
+
     protected PermissionManagementModal PermissionManagementModal;
 
-    protected string ManagePermissionsPolicyName;
+    protected List<IdentityRoleDto> Entities { get; set; } = new();
+    protected int TotalCount { get; set; }
+    protected int CurrentPage { get; set; } = 1;
+    protected int PageSize { get; set; } = 10;
 
+    protected bool HasCreatePermission { get; set; }
+    protected bool HasUpdatePermission { get; set; }
+    protected bool HasDeletePermission { get; set; }
     protected bool HasManagePermissionsPermission { get; set; }
 
-    protected PageToolbar Toolbar { get; } = new();
+    protected bool IsCreateDialogVisible { get; set; }
+    protected IdentityRoleCreateDto NewEntity { get; set; } = new();
 
-    protected List<TableColumn> RoleManagementTableColumns => TableColumns.Get<RoleManagement>();
+    protected bool IsEditDialogVisible { get; set; }
+    protected IdentityRoleUpdateDto EditingEntity { get; set; } = new();
+    protected Guid EditingEntityId { get; set; }
 
     public RoleManagement()
     {
         ObjectMapperContext = typeof(AbpIdentityBlazorModule);
         LocalizationResource = typeof(IdentityResource);
-
-        CreatePolicyName = IdentityPermissions.Roles.Create;
-        UpdatePolicyName = IdentityPermissions.Roles.Update;
-        DeletePolicyName = IdentityPermissions.Roles.Delete;
-        ManagePermissionsPolicyName = IdentityPermissions.Roles.ManagePermissions;
     }
 
-    protected override ValueTask SetBreadcrumbItemsAsync()
+    protected override async Task OnInitializedAsync()
     {
-        BreadcrumbItems.Add(new BlazoriseUI.BreadcrumbItem(LUiNavigation["Menu:Administration"].Value));
-        BreadcrumbItems.Add(new BlazoriseUI.BreadcrumbItem(L["Menu:IdentityManagement"].Value));
-        BreadcrumbItems.Add(new BlazoriseUI.BreadcrumbItem(L["Roles"].Value));
-        return base.SetBreadcrumbItemsAsync();
+        await SetPermissionsAsync();
+        await LoadEntitiesAsync();
     }
 
-    protected override ValueTask SetEntityActionsAsync()
+    protected virtual async Task SetPermissionsAsync()
     {
-        EntityActions
-            .Get<RoleManagement>()
-            .AddRange(new EntityAction[]
+        HasCreatePermission = await AuthorizationService.IsGrantedAsync(IdentityPermissions.Roles.Create);
+        HasUpdatePermission = await AuthorizationService.IsGrantedAsync(IdentityPermissions.Roles.Update);
+        HasDeletePermission = await AuthorizationService.IsGrantedAsync(IdentityPermissions.Roles.Delete);
+        HasManagePermissionsPermission = await AuthorizationService.IsGrantedAsync(IdentityPermissions.Roles.ManagePermissions);
+    }
+
+    protected virtual async Task LoadEntitiesAsync()
+    {
+        try
+        {
+            var result = await AppService.GetListAsync(new GetIdentityRolesInput
             {
-                    new EntityAction
-                    {
-                        Text = L["Edit"],
-                        Visible = (data) => HasUpdatePermission,
-                        Clicked = async (data) => { await OpenEditModalAsync(data.As<IdentityRoleDto>()); }
-                    },
-                    new EntityAction
-                    {
-                        Text = L["Permissions"],
-                        Visible = (data) => HasManagePermissionsPermission,
-                        Clicked = async (data) =>
-                        {
-                            await PermissionManagementModal.OpenAsync(PermissionProviderName,
-                                data.As<IdentityRoleDto>().Name);
-                        }
-                    },
-                    new EntityAction
-                    {
-                        Text = L["Delete"],
-                        Visible = (data) => HasDeletePermission && !data.As<IdentityRoleDto>().IsStatic,
-                        Clicked = async (data) => await DeleteEntityAsync(data.As<IdentityRoleDto>()),
-                        ConfirmationMessage = (data) => GetDeleteConfirmationMessage(data.As<IdentityRoleDto>())
-                    }
+                MaxResultCount = PageSize,
+                SkipCount = (CurrentPage - 1) * PageSize
             });
-
-        return base.SetEntityActionsAsync();
+            Entities = result.Items.ToList();
+            TotalCount = (int)result.TotalCount;
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
     }
 
-    protected override async ValueTask SetTableColumnsAsync()
+    protected virtual Task OpenCreateDialogAsync()
     {
-        RoleManagementTableColumns
-            .AddRange(new TableColumn[]
+        NewEntity = new IdentityRoleCreateDto();
+        IsCreateDialogVisible = true;
+        return Task.CompletedTask;
+    }
+
+    protected virtual void CloseCreateDialog()
+    {
+        IsCreateDialogVisible = false;
+    }
+
+    protected virtual async Task CreateEntityAsync()
+    {
+        try
+        {
+            await AppService.CreateAsync(NewEntity);
+            IsCreateDialogVisible = false;
+            await Notify.Success(L["SavedSuccessfully"].Value);
+            await LoadEntitiesAsync();
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
+    }
+
+    protected virtual Task OpenEditDialogAsync(IdentityRoleDto entity)
+    {
+        EditingEntityId = entity.Id;
+        EditingEntity = ObjectMapper.Map<IdentityRoleDto, IdentityRoleUpdateDto>(entity);
+        IsEditDialogVisible = true;
+        return Task.CompletedTask;
+    }
+
+    protected virtual void CloseEditDialog()
+    {
+        IsEditDialogVisible = false;
+    }
+
+    protected virtual async Task UpdateEntityAsync()
+    {
+        try
+        {
+            await AppService.UpdateAsync(EditingEntityId, EditingEntity);
+            IsEditDialogVisible = false;
+            await Notify.Success(L["SavedSuccessfully"].Value);
+            await LoadEntitiesAsync();
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
+    }
+
+    protected virtual async Task DeleteEntityAsync(IdentityRoleDto entity)
+    {
+        var confirmed = await Message.Confirm(string.Format(L["RoleDeletionConfirmationMessage"], entity.Name));
+        if (confirmed)
+        {
+            try
             {
-                    new TableColumn
-                    {
-                        Title = L["Actions"],
-                        Actions = EntityActions.Get<RoleManagement>(),
-                    },
-                    new TableColumn
-                    {
-                        Title = L["RoleName"],
-                        Sortable = true,
-                        Data = nameof(IdentityRoleDto.Name),
-                        Component = typeof(RoleNameComponent)
-                    },
-            });
-
-        RoleManagementTableColumns.AddRange(await GetExtensionTableColumnsAsync(IdentityModuleExtensionConsts.ModuleName,
-            IdentityModuleExtensionConsts.EntityNames.Role));
-
-        await base.SetTableColumnsAsync();
+                await AppService.DeleteAsync(entity.Id);
+                await Notify.Success(L["SuccessfullyDeleted"].Value);
+                await LoadEntitiesAsync();
+            }
+            catch (Exception ex)
+            {
+                await HandleErrorAsync(ex);
+            }
+        }
     }
 
-    protected override async Task SetPermissionsAsync()
+    protected virtual async Task PageChangedAsync(int page)
     {
-        await base.SetPermissionsAsync();
-
-        HasManagePermissionsPermission =
-            await AuthorizationService.IsGrantedAsync(IdentityPermissions.Roles.ManagePermissions);
-    }
-
-    protected override string GetDeleteConfirmationMessage(IdentityRoleDto entity)
-    {
-        return string.Format(L["RoleDeletionConfirmationMessage"], entity.Name);
-    }
-
-    protected override ValueTask SetToolbarItemsAsync()
-    {
-        Toolbar.AddButton(L["NewRole"],
-            OpenCreateModalAsync,
-            IconName.Add,
-            requiredPolicyName: CreatePolicyName);
-
-        return base.SetToolbarItemsAsync();
+        CurrentPage = page;
+        await LoadEntitiesAsync();
     }
 }
+

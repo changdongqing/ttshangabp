@@ -1,9 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Blazorise;
-using Blazorise.Components;
 using Microsoft.AspNetCore.Components;
 using Volo.Abp.AspNetCore.Components.Messages;
 using Volo.Abp.PermissionManagement.Localization;
@@ -16,7 +14,9 @@ public partial class ResourcePermissionManagementModal
 
     [Inject] protected IUiMessageService UiMessageService { get; set; }
 
-    protected Modal Modal { get; set; }
+    protected bool _isVisible;
+    protected bool _isCreateVisible;
+    protected bool _isEditVisible;
 
     public bool HasAnyResourcePermission { get; set; }
     public bool HasAnyResourceProviderKeyLookupService { get; set; }
@@ -25,34 +25,16 @@ public partial class ResourcePermissionManagementModal
     protected string ResourceDisplayName { get; set; }
     protected int PageSize { get; set; } = 10;
 
-    protected Modal CreateModal { get; set; }
-    protected Validations CreateValidationsRef { get; set; }
-    protected CreateModel CreateEntity { get; set; } = new CreateModel
-    {
-        Permissions = []
-    };
-    protected Autocomplete<SearchProviderKeyInfo, string> ProviderKeyAutocompleteRef { get; set; }
-    protected Blazorise.Validation ProviderKeyValidationRef { get; set; }
-    public GetResourcePermissionDefinitionListResultDto ResourcePermissionDefinitions { get; set; } = new()
-    {
-        Permissions = []
-    };
+    protected CreateModel CreateEntity { get; set; } = new CreateModel { Permissions = [] };
+    public GetResourcePermissionDefinitionListResultDto ResourcePermissionDefinitions { get; set; } = new() { Permissions = [] };
     protected string CurrentLookupService { get; set; }
     protected string ProviderKey { get; set; }
     protected string ProviderDisplayName { get; set; }
     protected List<ResourceProviderDto> ResourceProviderKeyLookupServices { get; set; } = new();
     protected List<SearchProviderKeyInfo> ProviderKeys { get; set; } = new();
-    protected GetResourcePermissionListResultDto ResourcePermissionList = new()
-    {
-        Permissions = []
-    };
+    protected GetResourcePermissionListResultDto ResourcePermissionList = new() { Permissions = [] };
 
-    protected Validations EditValidationsRef { get; set; }
-    protected Modal EditModal { get; set; }
-    protected EditModel EditEntity { get; set; } = new EditModel
-    {
-        Permissions = []
-    };
+    protected EditModel EditEntity { get; set; } = new EditModel { Permissions = [] };
 
     public ResourcePermissionManagementModal()
     {
@@ -76,12 +58,10 @@ public partial class ResourcePermissionManagementModal
                 HasAnyResourceProviderKeyLookupService = ResourceProviderKeyLookupServices.Count > 0;
             }
 
-            await InvokeAsync(StateHasChanged);
-
             ResourcePermissionList = await PermissionAppService.GetResourceAsync(ResourceName, ResourceKey);
 
-            await Modal.Show();
-
+            _isVisible = true;
+            await InvokeAsync(StateHasChanged);
         }
         catch (Exception ex)
         {
@@ -89,26 +69,18 @@ public partial class ResourcePermissionManagementModal
         }
     }
 
-    protected virtual async Task CloseModal()
+    protected virtual Task CloseModal()
     {
-        await Modal.Hide();
-    }
-
-    protected virtual Task ClosingModal(ModalClosingEventArgs eventArgs)
-    {
-        eventArgs.Cancel = eventArgs.CloseReason == CloseReason.FocusLostClosing;
-        return Task.CompletedTask;
+        _isVisible = false;
+        return InvokeAsync(StateHasChanged);
     }
 
     protected virtual async Task OpenCreateModalAsync()
     {
         CurrentLookupService = ResourceProviderKeyLookupServices.FirstOrDefault()?.Name;
-
         ProviderKey = null;
         ProviderDisplayName = null;
         ProviderKeys = new List<SearchProviderKeyInfo>();
-        await ProviderKeyAutocompleteRef.Clear();
-        await CreateValidationsRef.ClearAll();
 
         CreateEntity = new CreateModel
         {
@@ -120,14 +92,15 @@ public partial class ResourcePermissionManagementModal
             }).ToList()
         };
 
-        await CreateModal.Show();
+        _isCreateVisible = true;
         await InvokeAsync(StateHasChanged);
     }
 
-    protected virtual async Task SelectedProviderKeyAsync(string value)
+    protected virtual async Task SelectedProviderKeyChangedAsync(SearchProviderKeyInfo item)
     {
-        ProviderKey = value;
-        ProviderDisplayName = ProviderKeys.FirstOrDefault(p => p.ProviderKey == value)?.ProviderDisplayName;
+        if (item == null) return;
+        ProviderKey = item.ProviderKey;
+        ProviderDisplayName = item.ProviderDisplayName;
 
         var permissionGrants = await PermissionAppService.GetResourceByProviderAsync(ResourceName, ResourceKey, CurrentLookupService, ProviderKey);
         foreach (var permission in CreateEntity.Permissions)
@@ -138,20 +111,11 @@ public partial class ResourcePermissionManagementModal
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task SearchProviderKeyAsync(AutocompleteReadDataEventArgs autocompleteReadDataEventArgs)
+    protected virtual async Task<IEnumerable<SearchProviderKeyInfo>> SearchProviderKeyFuncAsync(string searchValue, System.Threading.CancellationToken cancellationToken)
     {
-        if ( !autocompleteReadDataEventArgs.CancellationToken.IsCancellationRequested )
-        {
-            if (autocompleteReadDataEventArgs.SearchValue.IsNullOrWhiteSpace())
-            {
-                ProviderKeys = new List<SearchProviderKeyInfo>();
-                return;
-            }
-
-            ProviderKeys = (await PermissionAppService.SearchResourceProviderKeyAsync(ResourceName, CurrentLookupService, autocompleteReadDataEventArgs.SearchValue, 1)).Keys;
-
-            await InvokeAsync(StateHasChanged);
-        }
+        if (searchValue.IsNullOrWhiteSpace()) return Enumerable.Empty<SearchProviderKeyInfo>();
+        ProviderKeys = (await PermissionAppService.SearchResourceProviderKeyAsync(ResourceName, CurrentLookupService, searchValue, 1)).Keys;
+        return ProviderKeys;
     }
 
     protected virtual async Task OnPermissionCheckedChanged(ResourcePermissionModel permission, bool value)
@@ -160,18 +124,15 @@ public partial class ResourcePermissionManagementModal
         await InvokeAsync(StateHasChanged);
     }
 
-    protected virtual async Task GrantAllAsync(bool value)
+    protected virtual async Task GrantAllCreateAsync(bool value)
     {
-        foreach (var permission in CreateEntity.Permissions)
-        {
-            permission.IsGranted = value;
-        }
+        foreach (var permission in CreateEntity.Permissions) permission.IsGranted = value;
+        await InvokeAsync(StateHasChanged);
+    }
 
-        foreach (var permission in EditEntity.Permissions)
-        {
-            permission.IsGranted = value;
-        }
-
+    protected virtual async Task GrantAllEditAsync(bool value)
+    {
+        foreach (var permission in EditEntity.Permissions) permission.IsGranted = value;
         await InvokeAsync(StateHasChanged);
     }
 
@@ -190,29 +151,20 @@ public partial class ResourcePermissionManagementModal
             }).ToList()
         };
 
-        await EditModal.Show();
+        _isEditVisible = true;
+        await InvokeAsync(StateHasChanged);
     }
 
-    protected virtual Task ClosingCreateModal(ModalClosingEventArgs eventArgs)
+    protected virtual Task CloseCreateModalAsync()
     {
-        eventArgs.Cancel = eventArgs.CloseReason == CloseReason.FocusLostClosing;
-        return Task.CompletedTask;
+        _isCreateVisible = false;
+        return InvokeAsync(StateHasChanged);
     }
 
-    protected virtual Task ClosingEditModal(ModalClosingEventArgs eventArgs)
+    protected virtual Task CloseEditModalAsync()
     {
-        eventArgs.Cancel = eventArgs.CloseReason == CloseReason.FocusLostClosing;
-        return Task.CompletedTask;
-    }
-
-    protected virtual async Task CloseCreateModalAsync()
-    {
-        await CreateModal.Hide();
-    }
-
-    protected virtual async Task CloseEditModalAsync()
-    {
-        await EditModal.Hide();
+        _isEditVisible = false;
+        return InvokeAsync(StateHasChanged);
     }
 
     protected virtual async Task OnLookupServiceCheckedValueChanged(string value)
@@ -220,59 +172,43 @@ public partial class ResourcePermissionManagementModal
         CurrentLookupService = value;
         ProviderKey = null;
         ProviderDisplayName = null;
-        await ProviderKeyAutocompleteRef.Clear();
-        await CreateValidationsRef.ClearAll();
         await InvokeAsync(StateHasChanged);
-    }
-
-    protected virtual void ValidateProviderKey(ValidatorEventArgs validatorEventArgs)
-    {
-        validatorEventArgs.Status = ProviderKey.IsNullOrWhiteSpace()
-                ? ValidationStatus.Error
-                : ValidationStatus.Success;
-        validatorEventArgs.ErrorText = L["ThisFieldIsRequired."];
     }
 
     protected virtual async Task CreateResourcePermissionAsync()
     {
-        if (await CreateValidationsRef.ValidateAll())
-        {
-            await PermissionAppService.UpdateResourceAsync(
-                ResourceName,
-                ResourceKey,
-                new UpdateResourcePermissionsDto
-                {
-                    ProviderName = CurrentLookupService,
-                    ProviderKey = ProviderKey,
-                    Permissions = CreateEntity.Permissions.Where(p => p.IsGranted).Select(p => p.Name).ToList()
-                }
-            );
+        await PermissionAppService.UpdateResourceAsync(
+            ResourceName,
+            ResourceKey,
+            new UpdateResourcePermissionsDto
+            {
+                ProviderName = CurrentLookupService,
+                ProviderKey = ProviderKey,
+                Permissions = CreateEntity.Permissions.Where(p => p.IsGranted).Select(p => p.Name).ToList()
+            }
+        );
 
-            await CloseCreateModalAsync();
-            ResourcePermissionList = await PermissionAppService.GetResourceAsync(ResourceName, ResourceKey);
-            await InvokeAsync(StateHasChanged);
-        }
+        await CloseCreateModalAsync();
+        ResourcePermissionList = await PermissionAppService.GetResourceAsync(ResourceName, ResourceKey);
+        await InvokeAsync(StateHasChanged);
     }
 
     protected virtual async Task UpdateResourcePermissionAsync()
     {
-        if (await EditValidationsRef.ValidateAll())
-        {
-            await PermissionAppService.UpdateResourceAsync(
-                ResourceName,
-                ResourceKey,
-                new UpdateResourcePermissionsDto
-                {
-                    ProviderName = EditEntity.ProviderName,
-                    ProviderKey = EditEntity.ProviderKey,
-                    Permissions = EditEntity.Permissions.Where(p => p.IsGranted).Select(p => p.Name).ToList()
-                }
-            );
+        await PermissionAppService.UpdateResourceAsync(
+            ResourceName,
+            ResourceKey,
+            new UpdateResourcePermissionsDto
+            {
+                ProviderName = EditEntity.ProviderName,
+                ProviderKey = EditEntity.ProviderKey,
+                Permissions = EditEntity.Permissions.Where(p => p.IsGranted).Select(p => p.Name).ToList()
+            }
+        );
 
-            await CloseEditModalAsync();
-            ResourcePermissionList = await PermissionAppService.GetResourceAsync(ResourceName, ResourceKey);
-            await InvokeAsync(StateHasChanged);
-        }
+        await CloseEditModalAsync();
+        ResourcePermissionList = await PermissionAppService.GetResourceAsync(ResourceName, ResourceKey);
+        await InvokeAsync(StateHasChanged);
     }
 
     protected virtual async Task DeleteResourcePermissionAsync(ResourcePermissionGrantInfoDto permission)
@@ -300,18 +236,14 @@ public partial class ResourcePermissionManagementModal
     public class EditModel
     {
         public string ProviderName { get; set; }
-
         public string ProviderKey { get; set; }
-
         public List<ResourcePermissionModel> Permissions { get; set; }
     }
 
     public class ResourcePermissionModel
     {
         public string Name { get; set; }
-
         public string DisplayName { get; set; }
-
         public bool IsGranted { get; set; }
     }
 }

@@ -1,13 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Blazorise;
 using Microsoft.AspNetCore.Authorization;
-using Volo.Abp.AspNetCore.Components.Web.Extensibility.EntityActions;
-using Volo.Abp.AspNetCore.Components.Web.Extensibility.TableColumns;
-using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars;
+using Microsoft.AspNetCore.Components;
 using Volo.Abp.FeatureManagement.Blazor.Components;
-using Volo.Abp.ObjectExtending;
 using Volo.Abp.TenantManagement.Localization;
 
 namespace Volo.Abp.TenantManagement.Blazor.Pages.TenantManagement;
@@ -16,120 +13,143 @@ public partial class TenantManagement
 {
     protected const string FeatureProviderName = "T";
 
-    protected bool HasManageFeaturesPermission;
-    protected string ManageFeaturesPolicyName;
+    [Inject] protected ITenantAppService AppService { get; set; }
 
     protected FeatureManagementModal FeatureManagementModal;
 
-    protected bool ShowPassword { get; set; }
+    protected List<TenantDto> Entities { get; set; } = new();
+    protected int TotalCount { get; set; }
+    protected int CurrentPage { get; set; } = 1;
+    protected int PageSize { get; set; } = 10;
 
-    protected PageToolbar Toolbar { get; } = new();
+    protected bool HasCreatePermission { get; set; }
+    protected bool HasUpdatePermission { get; set; }
+    protected bool HasDeletePermission { get; set; }
+    protected bool HasManageFeaturesPermission { get; set; }
 
-    protected List<TableColumn> TenantManagementTableColumns => TableColumns.Get<TenantManagement>();
+    protected bool IsCreateDialogVisible { get; set; }
+    protected TenantCreateDto NewEntity { get; set; } = new();
+    protected bool ShowNewPassword { get; set; }
+
+    protected bool IsEditDialogVisible { get; set; }
+    protected TenantUpdateDto EditingEntity { get; set; } = new();
+    protected Guid EditingEntityId { get; set; }
 
     public TenantManagement()
     {
-        LocalizationResource = typeof(AbpTenantManagementResource);
         ObjectMapperContext = typeof(AbpTenantManagementBlazorModule);
-
-        CreatePolicyName = TenantManagementPermissions.Tenants.Create;
-        UpdatePolicyName = TenantManagementPermissions.Tenants.Update;
-        DeletePolicyName = TenantManagementPermissions.Tenants.Delete;
-
-        ManageFeaturesPolicyName = TenantManagementPermissions.Tenants.ManageFeatures;
+        LocalizationResource = typeof(AbpTenantManagementResource);
     }
 
-    protected override ValueTask SetBreadcrumbItemsAsync()
+    protected override async Task OnInitializedAsync()
     {
-        BreadcrumbItems.Add(new BlazoriseUI.BreadcrumbItem(LUiNavigation["Menu:Administration"]));
-        BreadcrumbItems.Add(new BlazoriseUI.BreadcrumbItem(L["Menu:TenantManagement"]));
-        BreadcrumbItems.Add(new BlazoriseUI.BreadcrumbItem(L["Tenants"]));
-        return base.SetBreadcrumbItemsAsync();
+        await SetPermissionsAsync();
+        await LoadEntitiesAsync();
     }
 
-    protected override async Task SetPermissionsAsync()
+    protected virtual async Task SetPermissionsAsync()
     {
-        await base.SetPermissionsAsync();
-
-        HasManageFeaturesPermission = await AuthorizationService.IsGrantedAsync(ManageFeaturesPolicyName);
+        HasCreatePermission = await AuthorizationService.IsGrantedAsync(TenantManagementPermissions.Tenants.Create);
+        HasUpdatePermission = await AuthorizationService.IsGrantedAsync(TenantManagementPermissions.Tenants.Update);
+        HasDeletePermission = await AuthorizationService.IsGrantedAsync(TenantManagementPermissions.Tenants.Delete);
+        HasManageFeaturesPermission = await AuthorizationService.IsGrantedAsync(TenantManagementPermissions.Tenants.ManageFeatures);
     }
 
-    protected override string GetDeleteConfirmationMessage(TenantDto entity)
+    protected virtual async Task LoadEntitiesAsync()
     {
-        return string.Format(L["TenantDeletionConfirmationMessage"], entity.Name);
-    }
-
-    protected override ValueTask SetToolbarItemsAsync()
-    {
-        Toolbar.AddButton(L["NewTenant"],
-            OpenCreateModalAsync,
-            IconName.Add,
-            requiredPolicyName: CreatePolicyName);
-
-        return base.SetToolbarItemsAsync();
-    }
-
-    protected override ValueTask SetEntityActionsAsync()
-    {
-        EntityActions
-            .Get<TenantManagement>()
-            .AddRange(new EntityAction[]
+        try
+        {
+            var result = await AppService.GetListAsync(new GetTenantsInput
             {
-                    new EntityAction
-                    {
-                        Text = L["Edit"],
-                        Visible = (data) => HasUpdatePermission,
-                        Clicked = async (data) => { await OpenEditModalAsync(data.As<TenantDto>()); }
-                    },
-                    new EntityAction
-                    {
-                        Text = L["Features"],
-                        Visible = (data) => HasManageFeaturesPermission,
-                        Clicked = async (data) =>
-                        {
-                            var tenant = data.As<TenantDto>();
-                            await FeatureManagementModal.OpenAsync(FeatureProviderName, tenant.Id.ToString(), tenant.Name);
-                        }
-                    },
-                    new EntityAction
-                    {
-                        Text = L["Delete"],
-                        Visible = (data) => HasDeletePermission,
-                        Clicked = async (data) => await DeleteEntityAsync(data.As<TenantDto>()),
-                        ConfirmationMessage = (data) => GetDeleteConfirmationMessage(data.As<TenantDto>())
-                    }
+                MaxResultCount = PageSize,
+                SkipCount = (CurrentPage - 1) * PageSize
             });
-
-        return base.SetEntityActionsAsync();
+            Entities = result.Items.ToList();
+            TotalCount = (int)result.TotalCount;
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
     }
 
-    protected override async ValueTask SetTableColumnsAsync()
+    protected virtual Task OpenCreateDialogAsync()
     {
-        TenantManagementTableColumns
-            .AddRange(new TableColumn[]
+        NewEntity = new TenantCreateDto();
+        ShowNewPassword = false;
+        IsCreateDialogVisible = true;
+        return Task.CompletedTask;
+    }
+
+    protected virtual void CloseCreateDialog()
+    {
+        IsCreateDialogVisible = false;
+    }
+
+    protected virtual async Task CreateEntityAsync()
+    {
+        try
+        {
+            await AppService.CreateAsync(NewEntity);
+            IsCreateDialogVisible = false;
+            await Notify.Success(L["SavedSuccessfully"].Value);
+            await LoadEntitiesAsync();
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
+    }
+
+    protected virtual Task OpenEditDialogAsync(TenantDto entity)
+    {
+        EditingEntityId = entity.Id;
+        EditingEntity = ObjectMapper.Map<TenantDto, TenantUpdateDto>(entity);
+        IsEditDialogVisible = true;
+        return Task.CompletedTask;
+    }
+
+    protected virtual void CloseEditDialog()
+    {
+        IsEditDialogVisible = false;
+    }
+
+    protected virtual async Task UpdateEntityAsync()
+    {
+        try
+        {
+            await AppService.UpdateAsync(EditingEntityId, EditingEntity);
+            IsEditDialogVisible = false;
+            await Notify.Success(L["SavedSuccessfully"].Value);
+            await LoadEntitiesAsync();
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
+    }
+
+    protected virtual async Task DeleteEntityAsync(TenantDto entity)
+    {
+        var confirmed = await Message.Confirm(string.Format(L["TenantDeletionConfirmationMessage"], entity.Name));
+        if (confirmed)
+        {
+            try
             {
-                    new TableColumn
-                    {
-                        Title = L["Actions"],
-                        Actions = EntityActions.Get<TenantManagement>(),
-                    },
-                    new TableColumn
-                    {
-                        Title = L["TenantName"],
-                        Sortable = true,
-                        Data = nameof(TenantDto.Name),
-                    },
-            });
-
-        TenantManagementTableColumns.AddRange(await GetExtensionTableColumnsAsync(
-            TenantManagementModuleExtensionConsts.ModuleName,
-            TenantManagementModuleExtensionConsts.EntityNames.Tenant));
-
-        await base.SetTableColumnsAsync();
+                await AppService.DeleteAsync(entity.Id);
+                await Notify.Success(L["SuccessfullyDeleted"].Value);
+                await LoadEntitiesAsync();
+            }
+            catch (Exception ex)
+            {
+                await HandleErrorAsync(ex);
+            }
+        }
     }
 
-    protected virtual void TogglePasswordVisibility()
+    protected virtual async Task PageChangedAsync(int page)
     {
-        ShowPassword = !ShowPassword;
+        CurrentPage = page;
+        await LoadEntitiesAsync();
     }
 }

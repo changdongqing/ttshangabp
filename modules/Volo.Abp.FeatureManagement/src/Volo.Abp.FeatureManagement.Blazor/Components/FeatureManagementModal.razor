@@ -1,104 +1,57 @@
-﻿@using Volo.Abp.Validation.StringValues
+@using Volo.Abp.Validation.StringValues
 @using Microsoft.Extensions.Localization
 @inherits AbpFeatureManagementComponentBase
 
-<Modal @ref="Modal" Closing="@ClosingModal">
-    <ModalContent Size="ModalSize.Large">
-        <ModalHeader>
-            <ModalTitle>@L["Features"]@ProviderKeyDisplayName</ModalTitle>
-            <CloseButton Clicked="CloseModal" />
-        </ModalHeader>
+<MudDialog @bind-Visible="_isVisible" MaxWidth="MaxWidth.Large" FullWidth="true">
+    <TitleContent>@L["Features"]@ProviderKeyDisplayName</TitleContent>
+    <DialogContent>
         @if (Groups == null || !Groups.Any())
         {
-            <span class="m-3">@L["NoFeatureFoundMessage"]</span>
+            <MudText>@L["NoFeatureFoundMessage"]</MudText>
         }
         else
         {
-            <ModalBody>
-                <Tabs TabPosition="TabPosition.Start" Pills="true" @bind-SelectedTab="@SelectedTabName">
-                    <Items>
-                        @foreach (var group in Groups)
-                        {
-                            <Tab Name="@GetNormalizedGroupName(group.Name)">
-                                <span>@group.DisplayName</span>
-                            </Tab>
-                        }
-                    </Items>
-                    <Content>
-                        @for (var i = 0; i < Groups.Count; i++)
-                        {
-                            var index = i;
-                            <TabPanel Name="@GetNormalizedGroupName(Groups[index].Name)">
-                                <h4>@Groups[index].DisplayName</h4>
-                                <hr class="mt-2 mb-3" />
-                                @foreach (var feature in Groups[index].Features)
+            <MudTabs Position="Position.Start" Rounded="true" Border="true">
+                @for (var i = 0; i < Groups.Count; i++)
+                {
+                    var index = i;
+                    <MudTabPanel Text="@Groups[index].DisplayName">
+                        <MudStack Class="pa-2">
+                            <MudText Typo="Typo.h6">@Groups[index].DisplayName</MudText>
+                            <MudDivider Class="mb-2" />
+                            @foreach (var feature in Groups[index].Features)
+                            {
+                                var disabled = IsDisabled(feature);
+                                @if (feature.ValueType is FreeTextStringValueType)
                                 {
-                                    <div class="mt-2">
-                                        @{
-                                            var disabled = IsDisabled(feature);
-
-                                            if (feature.ValueType is FreeTextStringValueType)
-                                            {
-                                                <Field Style="@GetFeatureStyles(feature)">
-                                                    <FieldLabel>@GetShownName(feature)</FieldLabel>
-                                                    <TextEdit Disabled="@disabled"
-                                                          Text="@feature.Value"
-                                                          TextChanged="@(async (v) => await OnFeatureValueChangedAsync(v, feature))" />
-                                                    @if (feature.Description != null)
-                                                    {
-                                                        <div class="form-text">@feature.Description</div>
-                                                    }
-                                                </Field>
-                                            }
-
-                                            if (feature.ValueType is SelectionStringValueType)
-                                            {
-                                                var items = ((SelectionStringValueType)feature.ValueType).ItemSource.Items;
-                                                var selectedValue = SelectionStringValues[feature.Name];
-                                                <Field Style="@GetFeatureStyles(feature)">
-                                                    <FieldLabel>@GetShownName(feature)</FieldLabel>
-                                                    <Select TValue="string" Disabled="disabled" SelectedValue="selectedValue" SelectedValueChanged="s => SelectionStringValues[feature.Name] = s">
-                                                        @foreach (var item in items)
-                                                        {
-                                                            <SelectItem Value="@item.Value">
-                                                                @CreateStringLocalizer(item.DisplayText.ResourceName).GetString(item.DisplayText.Name)
-                                                            </SelectItem>
-                                                        }
-                                                    </Select>
-                                                    @if (feature.Description != null)
-                                                    {
-                                                        <div class="form-text">@feature.Description</div>
-                                                    }
-                                                </Field>
-                                            }
-
-                                            if (feature.ValueType is ToggleStringValueType)
-                                            {
-                                                <Field Style="@GetFeatureStyles(feature)">
-                                                    <Check TValue="bool" Disabled="disabled" Checked="@ToggleValues[feature.Name]" CheckedChanged="@(async (v) => await OnSelectedValueChangedAsync(v, feature))">
-                                                        @GetShownName(feature)
-                                                    </Check>
-                                                    @if (feature.Description != null)
-                                                    {
-                                                        <div class="form-text">@feature.Description</div>
-                                                    }
-                                                </Field>
-                                            }
-                                        }
-                                    </div>
+                                    <MudTextField T="string" Label="@GetShownName(feature)" Disabled="@disabled" Value="@feature.Value" ValueChanged="@(async (v) => await OnFeatureValueChangedAsync(v, feature))" HelperText="@feature.Description" Class="mb-2" />
                                 }
-
-                            </TabPanel>
-                        }
-                    </Content>
-                </Tabs>
-            </ModalBody>
-            <ModalFooter>
-                <Button class="btn btn-link" Clicked="CloseModal">@L["Cancel"]</Button>
-                <Button Color="Color.Primary" Outline Clicked="@(async () => await DeleteAsync(ProviderName,ProviderKey))">@L["ResetToDefault"]</Button>
-                <Button Color="Color.Primary" Clicked="SaveAsync">@L["Save"]</Button>
-            </ModalFooter>
+                                @if (feature.ValueType is SelectionStringValueType)
+                                {
+                                    var items = ((SelectionStringValueType)feature.ValueType).ItemSource.Items;
+                                    var selectedValue = SelectionStringValues[feature.Name];
+                                    <MudSelect T="string" Label="@GetShownName(feature)" Disabled="@disabled" Value="selectedValue" ValueChanged="@(s => SelectionStringValues[feature.Name] = s)" HelperText="@feature.Description" Class="mb-2">
+                                        @foreach (var item in items)
+                                        {
+                                            <MudSelectItem Value="@item.Value">@CreateStringLocalizer(item.DisplayText.ResourceName).GetString(item.DisplayText.Name)</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                }
+                                @if (feature.ValueType is ToggleStringValueType)
+                                {
+                                    <MudCheckBox T="bool" Value="@ToggleValues[feature.Name]" ValueChanged="@(async (v) => await OnSelectedValueChangedAsync(v, feature))" Disabled="@disabled" Label="@GetShownName(feature)" />
+                                    @if (feature.Description != null) { <MudText Typo="Typo.caption">@feature.Description</MudText> }
+                                }
+                            }
+                        </MudStack>
+                    </MudTabPanel>
+                }
+            </MudTabs>
         }
-
-    </ModalContent>
-</Modal>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="CloseModal">@L["Cancel"]</MudButton>
+        <MudButton Color="Color.Secondary" OnClick="@(async () => await DeleteAsync(ProviderName, ProviderKey))">@L["ResetToDefault"]</MudButton>
+        <MudButton Color="Color.Primary" OnClick="SaveAsync">@L["Save"]</MudButton>
+    </DialogActions>
+</MudDialog>

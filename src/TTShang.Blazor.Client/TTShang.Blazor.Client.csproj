@@ -6,9 +6,7 @@
     <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Blazorise.Bootstrap5" Version="2.0.1" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="2.0.1" />
-    <PackageReference Include="Blazorise.Components" Version="2.0.1" />
+    <PackageReference Include="MudBlazor" Version="9.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.3" />
   </ItemGroup>

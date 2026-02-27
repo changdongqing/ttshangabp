@@ -1,13 +1,13 @@
-﻿@inherits Volo.Abp.AspNetCore.Components.AbpComponentBase
+@inherits Volo.Abp.AspNetCore.Components.AbpComponentBase
 
 @if (Settings != null && Settings.HasManageHostFeaturesPermission)
 {
-    <Form>
-        <Paragraph>@L["ManageHostFeaturesText"]</Paragraph>
-        <Button Size="Size.Small" Color="Color.Primary" onclick="@OnManageHostFeaturesClicked">
-            <Icon Name="@("fa-cog")"/> @L["ManageHostFeatures"]
-        </Button>
-    </Form>
+    <MudStack>
+        <MudText>@L["ManageHostFeaturesText"]</MudText>
+        <MudButton Size="Size.Small" Color="Color.Primary" Variant="Variant.Filled" OnClick="@OnManageHostFeaturesClicked">
+            @L["ManageHostFeatures"]
+        </MudButton>
+    </MudStack>
     
     <FeatureManagementModal @ref="FeatureManagementModal"/>
 }
