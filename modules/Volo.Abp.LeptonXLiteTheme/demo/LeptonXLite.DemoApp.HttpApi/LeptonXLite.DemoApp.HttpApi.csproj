@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>LeptonXLite.DemoApp</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <Version>5.1.0</Version>
+    <CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LeptonXLite.DemoApp.Application.Contracts\LeptonXLite.DemoApp.Application.Contracts.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Volo.CmsKit.HttpApi" Version="10.1.0" />
+    <ProjectReference Include="../../../Volo.Abp.FeatureManagement/src/Volo.Abp.FeatureManagement.HttpApi/Volo.Abp.FeatureManagement.HttpApi.csproj" />
+    <ProjectReference Include="../../../Volo.Abp.Identity/src/Volo.Abp.Identity.HttpApi/Volo.Abp.Identity.HttpApi.csproj" />
+    <ProjectReference Include="../../../Volo.Abp.PermissionManagement/src/Volo.Abp.PermissionManagement.HttpApi/Volo.Abp.PermissionManagement.HttpApi.csproj" />
+    <ProjectReference Include="../../../Volo.Abp.SettingManagement/src/Volo.Abp.SettingManagement.HttpApi/Volo.Abp.SettingManagement.HttpApi.csproj" />
+    <ProjectReference Include="../../../Volo.Abp.TenantManagement/src/Volo.Abp.TenantManagement.HttpApi/Volo.Abp.TenantManagement.HttpApi.csproj" />
+    <ProjectReference Include="../../../Volo.Abp.Account/src/Volo.Abp.Account.HttpApi/Volo.Abp.Account.HttpApi.csproj" />
+  </ItemGroup>
+</Project>

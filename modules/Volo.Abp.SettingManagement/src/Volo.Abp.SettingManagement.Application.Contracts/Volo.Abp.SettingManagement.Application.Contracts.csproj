@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net8.0;net9.0;net10.0</TargetFrameworks>
+    <RootNamespace />
+    <Version>10.1.0</Version>
+    <CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Volo.Abp.SettingManagement.Domain.Shared\Volo.Abp.SettingManagement.Domain.Shared.csproj" />
+    <PackageReference Include="Volo.Abp.Ddd.Application.Contracts" Version="10.1.0" />
+    <PackageReference Include="Volo.Abp.Authorization.Abstractions" Version="10.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Volo\Abp\SettingManagement\Localization\ApplicationContracts\*.json" />
+    <Content Remove="Volo\Abp\SettingManagement\Localization\ApplicationContracts\*.json" />
+  </ItemGroup>
+</Project>

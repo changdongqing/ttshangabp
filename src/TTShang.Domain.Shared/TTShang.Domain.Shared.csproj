@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\common.props" />
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <RootNamespace>TTShang</RootNamespace>
+    <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.BackgroundJobs.Domain.Shared" Version="10.1.0" />
+    <PackageReference Include="Volo.Abp.AuditLogging.Domain.Shared" Version="10.1.0" />
+    <PackageReference Include="Volo.Abp.BlobStoring.Database.Domain.Shared" Version="10.1.0" />
+    <PackageReference Include="Volo.Abp.GlobalFeatures" Version="10.1.0" />
+    <ProjectReference Include="../../modules/Volo.Abp.FeatureManagement/src/Volo.Abp.FeatureManagement.Domain.Shared/Volo.Abp.FeatureManagement.Domain.Shared.csproj" />
+    <ProjectReference Include="../../modules/Volo.Abp.PermissionManagement/src/Volo.Abp.PermissionManagement.Domain.Shared/Volo.Abp.PermissionManagement.Domain.Shared.csproj" />
+    <ProjectReference Include="../../modules/Volo.Abp.SettingManagement/src/Volo.Abp.SettingManagement.Domain.Shared/Volo.Abp.SettingManagement.Domain.Shared.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.OpenIddict.Domain.Shared" Version="10.1.0" />
+    <ProjectReference Include="../../modules/Volo.Abp.Identity/src/Volo.Abp.Identity.Domain.Shared/Volo.Abp.Identity.Domain.Shared.csproj" />
+    <ProjectReference Include="../../modules/Volo.Abp.TenantManagement/src/Volo.Abp.TenantManagement.Domain.Shared/Volo.Abp.TenantManagement.Domain.Shared.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="10.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\TTShang\*.json" />
+    <Content Remove="Localization\TTShang\*.json" />
+  </ItemGroup>
+</Project>

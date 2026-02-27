@@ -1,0 +1,132 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "declaration": false,
+    "experimentalDecorators": true,
+    "moduleResolution": "bundler",
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "es2022",
+    "paths": {
+      "@proxy": ["src/app/proxy/index.ts"],
+      "@proxy/*": ["src/app/proxy/*"],
+      "@volo/abp.ng.lepton-x.core": [
+        "../../../../angular/libs/lepton-x-abp-core/src/index.ts"
+      ],
+      "@abp/ng.theme.lepton-x": [
+        "../../../../angular/libs/abp-lepton-x/src/index.ts"
+      ],
+      "@abp/ng.theme.lepton-x/styles": [
+        "../../../../angular/libs/abp-lepton-x/styles/src/index.ts"
+      ],
+      "@abp/ng.theme.lepton-x/account": [
+        "../../../../angular/libs/abp-lepton-x/account/src/public-api.ts"
+      ],
+      "@abp/ng.theme.lepton-x/layouts": [
+        "../../../../angular/libs/abp-lepton-x/layouts/src/public-api.ts"
+      ],
+      "@volo/ngx-lepton-x.core": [
+        "../../../../angular/libs/lepton-x-core/src/index.ts"
+      ],
+      "@volo/ngx-lepton-x.lite": [
+        "../../../../angular/libs/lepton-x-lite/src/index.ts"
+      ],
+      "@volo/ngx-lepton-x.lite/styles": [
+        "../../../../angular/libs/lepton-x-lite/styles/src/index.ts"
+      ],
+      "@volo/ngx-lepton-x.lite/layouts": [
+        "../../../../angular/libs/lepton-x-lite/layouts/src/index.ts"
+      ],
+      "@volo/ngx-lepton-x.lite/layouts/styles": [
+        "../../../../angular/libs/lepton-x-lite/layouts/styles/src/index.ts"
+      ],
+      "@abp/ng.core": [
+        "../../../../../abp/npm/ng-packs/packages/core/src/public-api.ts"
+      ],
+      "@abp/ng.core/locale": [
+        "../../../../../abp/npm/ng-packs/packages/core/locale/src/public-api.ts"
+      ],
+      "@abp/ng.theme.shared": [
+        "../../../../../abp/npm/ng-packs/packages/theme-shared/src/public-api.ts"
+      ],
+      "@abp/ng.account": [
+        "../../../../../abp/npm/ng-packs/packages/account/src/public-api.ts"
+      ],
+      "@abp/ng.account/config": [
+        "../../../../../abp/npm/ng-packs/packages/account/config/src/public-api.ts"
+      ],
+      "@abp/ng.account.core": [
+        "../../../../../abp/npm/ng-packs/packages/account-core/src/public-api.ts"
+      ],
+      "@abp/ng.account.core/proxy": [
+        "../../../../../abp/npm/ng-packs/packages/account-core/proxy/src/public-api.ts"
+      ],
+      "@abp/ng.components": [
+        "../../../../../abp/npm/ng-packs/packages/components/src/public-api.ts"
+      ],
+      "@abp/ng.components/chart.js": [
+        "../../../../../abp/npm/ng-packs/packages/components/chart.js/src/public-api.ts"
+      ],
+      "@abp/ng.components/tree": [
+        "../../../../../abp/npm/ng-packs/packages/components/tree/src/public-api.ts"
+      ],
+      "@abp/ng.components/extensible": [
+        "../../../../../abp/npm/ng-packs/packages/components/extensible/src/public-api.ts"
+      ],
+      "@abp/ng.components/page": [
+        "../../../../../abp/npm/ng-packs/packages/components/page/src/public-api.ts"
+      ],
+      "@abp/ng.identity": [
+        "../../../../../abp/npm/ng-packs/packages/identity/src/public-api.ts"
+      ],
+      "@abp/ng.identity/proxy": [
+        "../../../../../abp/npm/ng-packs/packages/identity/proxy/src/public-api.ts"
+      ],
+      "@abp/ng.identity/config": [
+        "../../../../../abp/npm/ng-packs/packages/identity/config/src/public-api.ts"
+      ],
+      "@abp/ng.oauth": [
+        "../../../../../abp/npm/ng-packs/packages/oauth/src/public-api.ts"
+      ],
+      "@abp/ng.permission-management": [
+        "../../../../../abp/npm/ng-packs/packages/permission-management/src/public-api.ts"
+      ],
+      "@abp/ng.permission-management/proxy": [
+        "../../../../../abp/npm/ng-packs/packages/permission-management/proxy/src/public-api.ts"
+      ],
+      "@abp/ng.feature-management": [
+        "../../../../../abp/npm/ng-packs/packages/feature-management/src/public-api.ts"
+      ],
+      "@abp/ng.feature-management/proxy": [
+        "../../../../../abp/npm/ng-packs/packages/feature-management/proxy/src/public-api.ts"
+      ],
+      "@abp/ng.setting-management": [
+        "../../../../../abp/npm/ng-packs/packages/setting-management/src/public-api.ts"
+      ],
+      "@abp/ng.setting-management/proxy": [
+        "../../../../../abp/npm/ng-packs/packages/setting-management/proxy/src/public-api.ts"
+      ],
+      "@abp/ng.setting-management/config": [
+        "../../../../../abp/npm/ng-packs/packages/setting-management/config/src/public-api.ts"
+      ],
+      "@abp/ng.tenant-management": [
+        "../../../../../abp/npm/ng-packs/packages/tenant-management/src/public-api.ts"
+      ],
+      "@abp/ng.tenant-management/proxy": [
+        "../../../../../abp/npm/ng-packs/packages/tenant-management/proxy/src/public-api.ts"
+      ],
+      "@abp/ng.tenant-management/config": [
+        "../../../../../abp/npm/ng-packs/packages/tenant-management/config/src/public-api.ts"
+      ]
+    },
+    "useDefineForClassFields": false
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false
+  }
+}

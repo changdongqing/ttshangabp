@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <TargetFramework>net10.0</TargetFramework>
+    <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
+    <IsPackable>false</IsPackable>
+    <Version>5.1.0</Version>
+    <CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Blazorise.Bootstrap5" Version="$(BlazoriseVersion)" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="$(BlazoriseVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.Autofac.WebAssembly" Version="10.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../../Volo.Abp.Identity/src/Volo.Abp.Identity.Blazor.WebAssembly/Volo.Abp.Identity.Blazor.WebAssembly.csproj" />
+    <ProjectReference Include="../../../Volo.Abp.SettingManagement/src/Volo.Abp.SettingManagement.Blazor.WebAssembly/Volo.Abp.SettingManagement.Blazor.WebAssembly.csproj" />
+    <ProjectReference Include="../../../Volo.Abp.TenantManagement/src/Volo.Abp.TenantManagement.Blazor.WebAssembly/Volo.Abp.TenantManagement.Blazor.WebAssembly.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Volo.Abp.AspNetCore.Components.WebAssembly.LeptonXLiteTheme\Volo.Abp.AspNetCore.Components.WebAssembly.LeptonXLiteTheme.csproj" />
+    <ProjectReference Include="..\LeptonXLite.DemoApp.HttpApi.Client\LeptonXLite.DemoApp.HttpApi.Client.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,111 @@
+<Solution>
+    <Folder Name="/modules/" />
+    <Folder Name="/modules/Volo.Abp.Account/">
+        <Project Path="modules/Volo.Abp.Account/src/Volo.Abp.Account.Application.Contracts/Volo.Abp.Account.Application.Contracts.csproj" />
+        <Project Path="modules/Volo.Abp.Account/src/Volo.Abp.Account.Application/Volo.Abp.Account.Application.csproj" />
+        <Project Path="modules/Volo.Abp.Account/src/Volo.Abp.Account.Blazor/Volo.Abp.Account.Blazor.csproj" />
+        <Project Path="modules/Volo.Abp.Account/src/Volo.Abp.Account.HttpApi.Client/Volo.Abp.Account.HttpApi.Client.csproj" />
+        <Project Path="modules/Volo.Abp.Account/src/Volo.Abp.Account.HttpApi/Volo.Abp.Account.HttpApi.csproj" />
+        <Project Path="modules/Volo.Abp.Account/src/Volo.Abp.Account.Installer/Volo.Abp.Account.Installer.csproj" />
+        <Project Path="modules/Volo.Abp.Account/src/Volo.Abp.Account.Web.IdentityServer/Volo.Abp.Account.Web.IdentityServer.csproj" />
+        <Project Path="modules/Volo.Abp.Account/src/Volo.Abp.Account.Web.OpenIddict/Volo.Abp.Account.Web.OpenIddict.csproj" />
+        <Project Path="modules/Volo.Abp.Account/src/Volo.Abp.Account.Web/Volo.Abp.Account.Web.csproj" />
+    </Folder>
+    <Folder Name="/modules/Volo.Abp.FeatureManagement/">
+        <Project Path="modules/Volo.Abp.FeatureManagement/src/Volo.Abp.FeatureManagement.Application.Contracts/Volo.Abp.FeatureManagement.Application.Contracts.csproj" />
+        <Project Path="modules/Volo.Abp.FeatureManagement/src/Volo.Abp.FeatureManagement.Application/Volo.Abp.FeatureManagement.Application.csproj" />
+        <Project Path="modules/Volo.Abp.FeatureManagement/src/Volo.Abp.FeatureManagement.Blazor.Server/Volo.Abp.FeatureManagement.Blazor.Server.csproj" />
+        <Project Path="modules/Volo.Abp.FeatureManagement/src/Volo.Abp.FeatureManagement.Blazor.WebAssembly/Volo.Abp.FeatureManagement.Blazor.WebAssembly.csproj" />
+        <Project Path="modules/Volo.Abp.FeatureManagement/src/Volo.Abp.FeatureManagement.Blazor/Volo.Abp.FeatureManagement.Blazor.csproj" />
+        <Project Path="modules/Volo.Abp.FeatureManagement/src/Volo.Abp.FeatureManagement.Domain.Shared/Volo.Abp.FeatureManagement.Domain.Shared.csproj" />
+        <Project Path="modules/Volo.Abp.FeatureManagement/src/Volo.Abp.FeatureManagement.Domain/Volo.Abp.FeatureManagement.Domain.csproj" />
+        <Project Path="modules/Volo.Abp.FeatureManagement/src/Volo.Abp.FeatureManagement.EntityFrameworkCore/Volo.Abp.FeatureManagement.EntityFrameworkCore.csproj" />
+        <Project Path="modules/Volo.Abp.FeatureManagement/src/Volo.Abp.FeatureManagement.HttpApi.Client/Volo.Abp.FeatureManagement.HttpApi.Client.csproj" />
+        <Project Path="modules/Volo.Abp.FeatureManagement/src/Volo.Abp.FeatureManagement.HttpApi/Volo.Abp.FeatureManagement.HttpApi.csproj" />
+        <Project Path="modules/Volo.Abp.FeatureManagement/src/Volo.Abp.FeatureManagement.Installer/Volo.Abp.FeatureManagement.Installer.csproj" />
+        <Project Path="modules/Volo.Abp.FeatureManagement/src/Volo.Abp.FeatureManagement.MongoDB/Volo.Abp.FeatureManagement.MongoDB.csproj" />
+        <Project Path="modules/Volo.Abp.FeatureManagement/src/Volo.Abp.FeatureManagement.Web/Volo.Abp.FeatureManagement.Web.csproj" />
+    </Folder>
+    <Folder Name="/modules/Volo.Abp.Identity/">
+        <Project Path="modules/Volo.Abp.Identity/src/Volo.Abp.Identity.Application.Contracts/Volo.Abp.Identity.Application.Contracts.csproj" />
+        <Project Path="modules/Volo.Abp.Identity/src/Volo.Abp.Identity.Application/Volo.Abp.Identity.Application.csproj" />
+        <Project Path="modules/Volo.Abp.Identity/src/Volo.Abp.Identity.AspNetCore/Volo.Abp.Identity.AspNetCore.csproj" />
+        <Project Path="modules/Volo.Abp.Identity/src/Volo.Abp.Identity.Blazor.Server/Volo.Abp.Identity.Blazor.Server.csproj" />
+        <Project Path="modules/Volo.Abp.Identity/src/Volo.Abp.Identity.Blazor.WebAssembly/Volo.Abp.Identity.Blazor.WebAssembly.csproj" />
+        <Project Path="modules/Volo.Abp.Identity/src/Volo.Abp.Identity.Blazor/Volo.Abp.Identity.Blazor.csproj" />
+        <Project Path="modules/Volo.Abp.Identity/src/Volo.Abp.Identity.Domain.Shared/Volo.Abp.Identity.Domain.Shared.csproj" />
+        <Project Path="modules/Volo.Abp.Identity/src/Volo.Abp.Identity.Domain/Volo.Abp.Identity.Domain.csproj" />
+        <Project Path="modules/Volo.Abp.Identity/src/Volo.Abp.Identity.EntityFrameworkCore/Volo.Abp.Identity.EntityFrameworkCore.csproj" />
+        <Project Path="modules/Volo.Abp.Identity/src/Volo.Abp.Identity.HttpApi.Client/Volo.Abp.Identity.HttpApi.Client.csproj" />
+        <Project Path="modules/Volo.Abp.Identity/src/Volo.Abp.Identity.HttpApi/Volo.Abp.Identity.HttpApi.csproj" />
+        <Project Path="modules/Volo.Abp.Identity/src/Volo.Abp.Identity.Installer/Volo.Abp.Identity.Installer.csproj" />
+        <Project Path="modules/Volo.Abp.Identity/src/Volo.Abp.Identity.MongoDB/Volo.Abp.Identity.MongoDB.csproj" />
+        <Project Path="modules/Volo.Abp.Identity/src/Volo.Abp.Identity.Web/Volo.Abp.Identity.Web.csproj" />
+        <Project Path="modules/Volo.Abp.Identity/src/Volo.Abp.PermissionManagement.Domain.Identity/Volo.Abp.PermissionManagement.Domain.Identity.csproj" />
+    </Folder>
+    <Folder Name="/modules/Volo.Abp.LeptonXLiteTheme/">
+        <Project Path="modules/Volo.Abp.LeptonXLiteTheme/src/Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme/Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme.csproj" />
+        <Project Path="modules/Volo.Abp.LeptonXLiteTheme/src/Volo.Abp.AspNetCore.Components.Web.LeptonXLiteTheme/Volo.Abp.AspNetCore.Components.Web.LeptonXLiteTheme.csproj" />
+        <Project Path="modules/Volo.Abp.LeptonXLiteTheme/src/Volo.Abp.AspNetCore.Components.WebAssembly.LeptonXLiteTheme.Bundling/Volo.Abp.AspNetCore.Components.WebAssembly.LeptonXLiteTheme.Bundling.csproj" />
+        <Project Path="modules/Volo.Abp.LeptonXLiteTheme/src/Volo.Abp.AspNetCore.Components.WebAssembly.LeptonXLiteTheme/Volo.Abp.AspNetCore.Components.WebAssembly.LeptonXLiteTheme.csproj" />
+        <Project Path="modules/Volo.Abp.LeptonXLiteTheme/src/Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite/Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.csproj" />
+        <Project Path="modules/Volo.Abp.LeptonXLiteTheme/src/Volo.Abp.LeptonXLiteTheme.Installer/Volo.Abp.LeptonXLiteTheme.Installer.csproj" />
+    </Folder>
+    <Folder Name="/modules/Volo.Abp.PermissionManagement/">
+        <Project Path="modules/Volo.Abp.PermissionManagement/src/Volo.Abp.PermissionManagement.Application.Contracts/Volo.Abp.PermissionManagement.Application.Contracts.csproj" />
+        <Project Path="modules/Volo.Abp.PermissionManagement/src/Volo.Abp.PermissionManagement.Application/Volo.Abp.PermissionManagement.Application.csproj" />
+        <Project Path="modules/Volo.Abp.PermissionManagement/src/Volo.Abp.PermissionManagement.Blazor.Server/Volo.Abp.PermissionManagement.Blazor.Server.csproj" />
+        <Project Path="modules/Volo.Abp.PermissionManagement/src/Volo.Abp.PermissionManagement.Blazor.WebAssembly/Volo.Abp.PermissionManagement.Blazor.WebAssembly.csproj" />
+        <Project Path="modules/Volo.Abp.PermissionManagement/src/Volo.Abp.PermissionManagement.Blazor/Volo.Abp.PermissionManagement.Blazor.csproj" />
+        <Project Path="modules/Volo.Abp.PermissionManagement/src/Volo.Abp.PermissionManagement.Domain.Shared/Volo.Abp.PermissionManagement.Domain.Shared.csproj" />
+        <Project Path="modules/Volo.Abp.PermissionManagement/src/Volo.Abp.PermissionManagement.Domain/Volo.Abp.PermissionManagement.Domain.csproj" />
+        <Project Path="modules/Volo.Abp.PermissionManagement/src/Volo.Abp.PermissionManagement.EntityFrameworkCore/Volo.Abp.PermissionManagement.EntityFrameworkCore.csproj" />
+        <Project Path="modules/Volo.Abp.PermissionManagement/src/Volo.Abp.PermissionManagement.HttpApi.Client/Volo.Abp.PermissionManagement.HttpApi.Client.csproj" />
+        <Project Path="modules/Volo.Abp.PermissionManagement/src/Volo.Abp.PermissionManagement.HttpApi/Volo.Abp.PermissionManagement.HttpApi.csproj" />
+        <Project Path="modules/Volo.Abp.PermissionManagement/src/Volo.Abp.PermissionManagement.Installer/Volo.Abp.PermissionManagement.Installer.csproj" />
+        <Project Path="modules/Volo.Abp.PermissionManagement/src/Volo.Abp.PermissionManagement.MongoDB/Volo.Abp.PermissionManagement.MongoDB.csproj" />
+        <Project Path="modules/Volo.Abp.PermissionManagement/src/Volo.Abp.PermissionManagement.Web/Volo.Abp.PermissionManagement.Web.csproj" />
+    </Folder>
+    <Folder Name="/modules/Volo.Abp.SettingManagement/">
+        <Project Path="modules/Volo.Abp.SettingManagement/src/Volo.Abp.SettingManagement.Application.Contracts/Volo.Abp.SettingManagement.Application.Contracts.csproj" />
+        <Project Path="modules/Volo.Abp.SettingManagement/src/Volo.Abp.SettingManagement.Application/Volo.Abp.SettingManagement.Application.csproj" />
+        <Project Path="modules/Volo.Abp.SettingManagement/src/Volo.Abp.SettingManagement.Blazor.Server/Volo.Abp.SettingManagement.Blazor.Server.csproj" />
+        <Project Path="modules/Volo.Abp.SettingManagement/src/Volo.Abp.SettingManagement.Blazor.WebAssembly/Volo.Abp.SettingManagement.Blazor.WebAssembly.csproj" />
+        <Project Path="modules/Volo.Abp.SettingManagement/src/Volo.Abp.SettingManagement.Blazor/Volo.Abp.SettingManagement.Blazor.csproj" />
+        <Project Path="modules/Volo.Abp.SettingManagement/src/Volo.Abp.SettingManagement.Domain.Shared/Volo.Abp.SettingManagement.Domain.Shared.csproj" />
+        <Project Path="modules/Volo.Abp.SettingManagement/src/Volo.Abp.SettingManagement.Domain/Volo.Abp.SettingManagement.Domain.csproj" />
+        <Project Path="modules/Volo.Abp.SettingManagement/src/Volo.Abp.SettingManagement.EntityFrameworkCore/Volo.Abp.SettingManagement.EntityFrameworkCore.csproj" />
+        <Project Path="modules/Volo.Abp.SettingManagement/src/Volo.Abp.SettingManagement.HttpApi.Client/Volo.Abp.SettingManagement.HttpApi.Client.csproj" />
+        <Project Path="modules/Volo.Abp.SettingManagement/src/Volo.Abp.SettingManagement.HttpApi/Volo.Abp.SettingManagement.HttpApi.csproj" />
+        <Project Path="modules/Volo.Abp.SettingManagement/src/Volo.Abp.SettingManagement.Installer/Volo.Abp.SettingManagement.Installer.csproj" />
+        <Project Path="modules/Volo.Abp.SettingManagement/src/Volo.Abp.SettingManagement.MongoDB/Volo.Abp.SettingManagement.MongoDB.csproj" />
+        <Project Path="modules/Volo.Abp.SettingManagement/src/Volo.Abp.SettingManagement.Web/Volo.Abp.SettingManagement.Web.csproj" />
+    </Folder>
+    <Folder Name="/modules/Volo.Abp.TenantManagement/">
+        <Project Path="modules/Volo.Abp.TenantManagement/src/Volo.Abp.TenantManagement.Application.Contracts/Volo.Abp.TenantManagement.Application.Contracts.csproj" />
+        <Project Path="modules/Volo.Abp.TenantManagement/src/Volo.Abp.TenantManagement.Application/Volo.Abp.TenantManagement.Application.csproj" />
+        <Project Path="modules/Volo.Abp.TenantManagement/src/Volo.Abp.TenantManagement.Blazor.Server/Volo.Abp.TenantManagement.Blazor.Server.csproj" />
+        <Project Path="modules/Volo.Abp.TenantManagement/src/Volo.Abp.TenantManagement.Blazor.WebAssembly/Volo.Abp.TenantManagement.Blazor.WebAssembly.csproj" />
+        <Project Path="modules/Volo.Abp.TenantManagement/src/Volo.Abp.TenantManagement.Blazor/Volo.Abp.TenantManagement.Blazor.csproj" />
+        <Project Path="modules/Volo.Abp.TenantManagement/src/Volo.Abp.TenantManagement.Domain.Shared/Volo.Abp.TenantManagement.Domain.Shared.csproj" />
+        <Project Path="modules/Volo.Abp.TenantManagement/src/Volo.Abp.TenantManagement.Domain/Volo.Abp.TenantManagement.Domain.csproj" />
+        <Project Path="modules/Volo.Abp.TenantManagement/src/Volo.Abp.TenantManagement.EntityFrameworkCore/Volo.Abp.TenantManagement.EntityFrameworkCore.csproj" />
+        <Project Path="modules/Volo.Abp.TenantManagement/src/Volo.Abp.TenantManagement.HttpApi.Client/Volo.Abp.TenantManagement.HttpApi.Client.csproj" />
+        <Project Path="modules/Volo.Abp.TenantManagement/src/Volo.Abp.TenantManagement.HttpApi/Volo.Abp.TenantManagement.HttpApi.csproj" />
+        <Project Path="modules/Volo.Abp.TenantManagement/src/Volo.Abp.TenantManagement.Installer/Volo.Abp.TenantManagement.Installer.csproj" />
+        <Project Path="modules/Volo.Abp.TenantManagement/src/Volo.Abp.TenantManagement.MongoDB/Volo.Abp.TenantManagement.MongoDB.csproj" />
+        <Project Path="modules/Volo.Abp.TenantManagement/src/Volo.Abp.TenantManagement.Web/Volo.Abp.TenantManagement.Web.csproj" />
+    </Folder>
+    <Folder Name="/src/">
+        <Project Path="src/TTShang.Domain/TTShang.Domain.csproj" />
+        <Project Path="src/TTShang.Application/TTShang.Application.csproj" />
+        <Project Path="src/TTShang.EntityFrameworkCore/TTShang.EntityFrameworkCore.csproj" />
+        <Project Path="src/TTShang.Domain.Shared/TTShang.Domain.Shared.csproj" />
+        <Project Path="src/TTShang.Application.Contracts/TTShang.Application.Contracts.csproj" />
+        <Project Path="src/TTShang.HttpApi/TTShang.HttpApi.csproj" />
+        <Project Path="src/TTShang.HttpApi.Client/TTShang.HttpApi.Client.csproj" />
+        <Project Path="src/TTShang.DbMigrator/TTShang.DbMigrator.csproj" />
+        <Project Path="src/TTShang.Blazor/TTShang.Blazor.csproj" />
+        <Project Path="src/TTShang.Blazor.Client/TTShang.Blazor.Client.csproj" />
+    </Folder>
+</Solution>

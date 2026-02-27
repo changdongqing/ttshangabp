@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>LeptonXLite.DemoApp</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <Version>5.1.0</Version>
+    <CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LeptonXLite.DemoApp.Application.Contracts\LeptonXLite.DemoApp.Application.Contracts.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Volo.CmsKit.HttpApi.Client" Version="10.1.0" />
+    <ProjectReference Include="../../../Volo.Abp.FeatureManagement/src/Volo.Abp.FeatureManagement.HttpApi.Client/Volo.Abp.FeatureManagement.HttpApi.Client.csproj" />
+    <ProjectReference Include="../../../Volo.Abp.Identity/src/Volo.Abp.Identity.HttpApi.Client/Volo.Abp.Identity.HttpApi.Client.csproj" />
+    <ProjectReference Include="../../../Volo.Abp.PermissionManagement/src/Volo.Abp.PermissionManagement.HttpApi.Client/Volo.Abp.PermissionManagement.HttpApi.Client.csproj" />
+    <ProjectReference Include="../../../Volo.Abp.SettingManagement/src/Volo.Abp.SettingManagement.HttpApi.Client/Volo.Abp.SettingManagement.HttpApi.Client.csproj" />
+    <ProjectReference Include="../../../Volo.Abp.TenantManagement/src/Volo.Abp.TenantManagement.HttpApi.Client/Volo.Abp.TenantManagement.HttpApi.Client.csproj" />
+    <ProjectReference Include="../../../Volo.Abp.Account/src/Volo.Abp.Account.HttpApi.Client/Volo.Abp.Account.HttpApi.Client.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="**\*generate-proxy.json" />
+    <Content Remove="**\*generate-proxy.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="**\*generate-proxy.json" />
+    <Content Remove="**\*generate-proxy.json" />
+  </ItemGroup>
+</Project>

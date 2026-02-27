@@ -1,0 +1,36 @@
+<div class="row">
+  <div class="col-md-8 col-lg-5 mx-auto">
+    <div class="lpx-logo-container lpx-login-brand-text">
+      <a href="/">
+        <div class="lpx-brand-logo lpx-login-logo mx-auto"></div>
+      </a>
+      <div class="lpx-brand-name lpx-login-name mx-auto">{{ appName }}</div>
+    </div>
+    @if (
+      (service.isMultiTenancyEnabled$ | async) && service.isTenantBoxVisible
+    ) {
+      <lpx-tenant-box
+        *abpReplaceableTemplate="{ componentKey: service.tenantBoxKey }"
+      />
+    }
+
+    @if (service.enableLocalLogin$ | async) {
+      <div class="card mt-3 shadow-sm rounded">
+        <div class="card-body p-2 p-sm-3">
+          <lpx-language-selection class="float-end" />
+          <ng-content />
+        </div>
+      </div>
+    } @else {
+      <div class="alert alert-warning">
+        <strong>{{
+          'AbpAccount::InvalidLoginRequest' | abpLocalization
+        }}</strong>
+        {{
+          'AbpAccount::ThereAreNoLoginSchemesConfiguredForThisClient'
+            | abpLocalization
+        }}
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>LeptonXLite.DemoApp</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <Version>5.1.0</Version>
+    <CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LeptonXLite.DemoApp.Domain.Shared\LeptonXLite.DemoApp.Domain.Shared.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.ObjectExtending" Version="10.1.0" />
+    <PackageReference Include="Volo.CmsKit.Application.Contracts" Version="10.1.0" />
+    <ProjectReference Include="../../../Volo.Abp.FeatureManagement/src/Volo.Abp.FeatureManagement.Application.Contracts/Volo.Abp.FeatureManagement.Application.Contracts.csproj" />
+    <ProjectReference Include="../../../Volo.Abp.Identity/src/Volo.Abp.Identity.Application.Contracts/Volo.Abp.Identity.Application.Contracts.csproj" />
+    <ProjectReference Include="../../../Volo.Abp.PermissionManagement/src/Volo.Abp.PermissionManagement.Application.Contracts/Volo.Abp.PermissionManagement.Application.Contracts.csproj" />
+    <ProjectReference Include="../../../Volo.Abp.SettingManagement/src/Volo.Abp.SettingManagement.Application.Contracts/Volo.Abp.SettingManagement.Application.Contracts.csproj" />
+    <ProjectReference Include="../../../Volo.Abp.TenantManagement/src/Volo.Abp.TenantManagement.Application.Contracts/Volo.Abp.TenantManagement.Application.Contracts.csproj" />
+    <ProjectReference Include="../../../Volo.Abp.Account/src/Volo.Abp.Account.Application.Contracts/Volo.Abp.Account.Application.Contracts.csproj" />
+  </ItemGroup>
+</Project>

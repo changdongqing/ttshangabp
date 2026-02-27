@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>LeptonXLite.DemoApp</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <Version>5.1.0</Version>
+    <CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LeptonXLite.DemoApp.Domain.Shared\LeptonXLite.DemoApp.Domain.Shared.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.Emailing" Version="10.1.0" />
+    <PackageReference Include="Volo.Abp.OpenIdDict.Domain" Version="10.1.0" />
+    <PackageReference Include="Volo.Abp.PermissionManagement.Domain.OpenIdDict" Version="10.1.0" />
+    <PackageReference Include="Volo.Abp.BackgroundJobs.Domain" Version="10.1.0" />
+    <PackageReference Include="Volo.Abp.AuditLogging.Domain" Version="10.1.0" />
+    <PackageReference Include="Volo.CmsKit.Domain" Version="10.1.0" />
+    <PackageReference Include="Volo.Abp.BlobStoring.Database.Domain" Version="10.1.0" />
+    <ProjectReference Include="../../../Volo.Abp.FeatureManagement/src/Volo.Abp.FeatureManagement.Domain/Volo.Abp.FeatureManagement.Domain.csproj" />
+    <ProjectReference Include="../../../Volo.Abp.Identity/src/Volo.Abp.Identity.Domain/Volo.Abp.Identity.Domain.csproj" />
+    <ProjectReference Include="../../../Volo.Abp.Identity/src/Volo.Abp.PermissionManagement.Domain.Identity/Volo.Abp.PermissionManagement.Domain.Identity.csproj" />
+    <ProjectReference Include="../../../Volo.Abp.SettingManagement/src/Volo.Abp.SettingManagement.Domain/Volo.Abp.SettingManagement.Domain.csproj" />
+    <ProjectReference Include="../../../Volo.Abp.TenantManagement/src/Volo.Abp.TenantManagement.Domain/Volo.Abp.TenantManagement.Domain.csproj" />
+  </ItemGroup>
+</Project>

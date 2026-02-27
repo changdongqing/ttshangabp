@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\common.props" />
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <RootNamespace>TTShang</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TTShang.Domain\TTShang.Domain.csproj" />
+    <ProjectReference Include="..\TTShang.Application.Contracts\TTShang.Application.Contracts.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../modules/Volo.Abp.FeatureManagement/src/Volo.Abp.FeatureManagement.Application/Volo.Abp.FeatureManagement.Application.csproj" />
+    <ProjectReference Include="../../modules/Volo.Abp.Identity/src/Volo.Abp.Identity.Application/Volo.Abp.Identity.Application.csproj" />
+    <ProjectReference Include="../../modules/Volo.Abp.PermissionManagement/src/Volo.Abp.PermissionManagement.Application/Volo.Abp.PermissionManagement.Application.csproj" />
+    <ProjectReference Include="../../modules/Volo.Abp.SettingManagement/src/Volo.Abp.SettingManagement.Application/Volo.Abp.SettingManagement.Application.csproj" />
+    <ProjectReference Include="../../modules/Volo.Abp.TenantManagement/src/Volo.Abp.TenantManagement.Application/Volo.Abp.TenantManagement.Application.csproj" />
+    <ProjectReference Include="../../modules/Volo.Abp.Account/src/Volo.Abp.Account.Application/Volo.Abp.Account.Application.csproj" />
+  </ItemGroup>
+</Project>

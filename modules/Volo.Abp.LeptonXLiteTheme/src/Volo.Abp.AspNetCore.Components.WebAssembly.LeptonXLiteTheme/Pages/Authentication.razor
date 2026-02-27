@@ -1,0 +1,34 @@
+﻿@page "/authentication/{action}"
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using global::Localization.Resources.AbpUi
+
+<RemoteAuthenticatorView Action="@Action" OnLogInSucceeded="OnLogInSucceeded" OnLogOutSucceeded="OnLogOutSucceeded">
+    <LogOutSucceeded>
+        @if(CurrentUser.IsAuthenticated)
+        {
+            Navigation.NavigateTo(Navigation.BaseUri);
+        }
+        else
+        {
+            @L["Authentication:YouAreLoggedOut"]
+        }
+        @{ Navigation.NavigateTo(Navigation.BaseUri); }
+    </LogOutSucceeded>
+</RemoteAuthenticatorView>
+
+@inject WebAssemblyCachedApplicationConfigurationClient WebAssemblyCachedApplicationConfigurationClient
+@inject NavigationManager Navigation
+@inherits AbpComponentBase
+
+@code{
+    [Parameter] public string Action { get; set; }
+
+    private async Task OnLogInSucceeded(RemoteAuthenticationState obj)
+    {
+        await WebAssemblyCachedApplicationConfigurationClient.InitializeAsync();
+    }
+    private async Task OnLogOutSucceeded(RemoteAuthenticationState obj)
+    {
+        await WebAssemblyCachedApplicationConfigurationClient.InitializeAsync();
+    }
+}

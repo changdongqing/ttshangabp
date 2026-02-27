@@ -1,0 +1,13 @@
+@using Volo.Abp.Ui.Branding
+@inject IBrandingProvider BrandingProvider
+
+@if(!BrandingProvider.LogoUrl.IsNullOrEmpty())
+{
+  var style = $".lpx-brand-logo{{--lpx-logo:url('{BrandingProvider.LogoUrl}')}}";
+  <style>@((MarkupString)style)</style>
+}
+
+<a href="/">
+  <div class="lpx-brand-logo"></div>
+  <div class="lpx-brand-name" style="left: 58px !important">@BrandingProvider.AppName</div>
+</a>

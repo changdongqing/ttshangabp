@@ -1,0 +1,29 @@
+﻿@using System.Globalization
+@using Microsoft.AspNetCore.Http.Extensions
+@using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.Languages
+
+@model ThemeLanguageInfo
+
+@if (Model.Languages.Count > 1 && Model.HasLanguages)
+{
+	var returnUrl = System.Net.WebUtility.UrlEncode(Context.Request.GetEncodedPathAndQuery());
+
+	<div class="lpx-language-selection btn-toggle lpx-toggle" role="button" data-lpx-toggle="mobile-language">
+		<i class="lpx-icon bi bi-globe" aria-hidden="true"></i>
+		<span id="lang">@(new CultureInfo(Model.CurrentLanguage.CultureName).TwoLetterISOLanguageName.ToUpperInvariant())</span>
+	</div>
+
+	<div class="action-group-menu d-none" id="mobile-language">
+        @{
+	        var seen = new HashSet<string>();
+	        var languages = Model.Languages.Select(language => seen.Add(language.TwoLetterISOLanguageName)
+	        ? (language, language.TwoLetterISOLanguageName.ToUpper())
+	        : (language, language.CultureName.ToUpper())).ToList();
+        }
+
+		@foreach (var language in languages)
+		{
+			<a href="~/Abp/Languages/Switch?culture=@language.language.CultureName&uiCulture=@language.language.UiCultureName&returnUrl=@returnUrl" class="action" role="button"> @language.language.DisplayName / @language.Item2</a>
+		}
+	</div>
+}
